@@ -404,11 +404,11 @@ exit:
 }
 EXPORT_SYMBOL_GPL(saa7231_i2c_init);
 
-int saa7231_i2c_exit(struct saa7231_dev *saa7231)
+void saa7231_i2c_exit(struct saa7231_dev *saa7231)
 {
 	struct saa7231_i2c *i2c		= saa7231->i2c;
 	struct i2c_adapter *adapter	= NULL;
-	int i, err = 0;
+	int i;
 
 	dprintk(SAA7231_DEBUG, 1, "Removing SAA%02x I2C Core", saa7231->pdev->device);
 	mutex_lock(&saa7231->dev_lock);
@@ -417,19 +417,14 @@ int saa7231_i2c_exit(struct saa7231_dev *saa7231)
 		adapter = &i2c->i2c_adapter;
 		if (adapter) {
 			dprintk(SAA7231_DEBUG, 1, "Removing adapter (%d) %s", i, adapter->name);
-			err = i2c_del_adapter(adapter);
-			if (err < 0) {
-				dprintk(SAA7231_ERROR, 1, "Adapter (%d) %s remove failed", i, adapter->name);
-				goto exit;
-			}
+			i2c_del_adapter(adapter);
 		}
 		i2c++;
 	}
 	dprintk(SAA7231_DEBUG, 1, "SAA%02x I2C Core succesfully removed", saa7231->pdev->device);
 	i2c = saa7231->i2c;
-exit:
 	kfree(i2c);
 	mutex_unlock(&saa7231->dev_lock);
-	return err;
+	return;
 }
 EXPORT_SYMBOL_GPL(saa7231_i2c_exit);

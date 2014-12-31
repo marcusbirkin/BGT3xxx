@@ -33,6 +33,6 @@ struct saa7231_i2c {
 };
 
 extern int saa7231_i2c_init(struct saa7231_dev *saa7231);
-extern int saa7231_i2c_exit(struct saa7231_dev *saa7231);
+extern void saa7231_i2c_exit(struct saa7231_dev *saa7231);
 
 #endif /* __SAA7231_H */
