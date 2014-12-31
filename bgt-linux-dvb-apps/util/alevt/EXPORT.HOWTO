@@ -1,0 +1,84 @@
+HOW TO IMPLEMENT A NEW EXPORT MODULE:
+
+As an example look at exp-txt.c (it implements two modules which
+are pretty similar).
+
+You have to create one exported structure (struct export_module).
+This structure holds the following data:
+
+1. The name of the format (example: "ascii").
+
+2. The default extension to use for building filenames ("txt").
+
+3. A list of module options. It's a 0 terminated array of char
+pointers, one for each option (similar to argv of main).
+If an option string contains a '=', it is an option that
+requires an argument.  The part after the '=' is ignored at
+the moment.  Later, I want to add help messages that show
+these options strings and then the part after the '=' becomes
+useful.
+If you do not have local options, set this field to 0.
+
+4. The number of bytes for local data in the export structure.
+There you may store data collected during option parsing or
+for whatever you want.
+Don't use global variables for storing this data!  With
+alevt-cap you may give:
+
+alevt-cap -format ascii,color 100  -format ascii 100
+
+to save the page in two different formats.  Using global
+vars would inhibit this.  The data area in struct export
+starts at the 'data' field.  You have to cast it to the
+appropriate type (see the D macro in exp-txt.c).
+If you do not need local data, set this field to 0.
+
+5. An open function (or call it constructor).  It is called
+when your module is needed and it is passed a struct export
+(the instance).  This function may be used to initialize
+the local data in the export struct.
+If all goes well return 0.  Else call export_error (see
+below) and return -1.
+If you do not need an open function, set this field to 0.
+
+6. A close function (or call it destructor).  It is called
+when your module is no longer needed.  If you allocated
+memory in the open func, this is the place to free it.
+If you do not need a close function, set it to 0.
+
+7. An option function.  It is called for each module option
+the user has given.  It is passed an option number (first
+option in the option-array gives 1, ...) and a char pointer
+to the argument for that option (0 if the option does not
+need an arg).  The argument pointer keeps valid until the
+close function is called.
+If all goes well, return 0.  Else call export_error and
+return -1.
+If you gave an option list at point 3 you have to specify
+this function.  Else set it to 0.
+
+8. An output function.  It is called to produce the output.
+It is given the file name to use and a fmt_page pointer.
+The fmt_page contains an interpreted image of the page.
+There are no control chars in it.  It uses the character
+set defined by the two fonts.
+These function may be called consecutive for multiple
+pages.  Don't expect one output for one open/close.
+Return codes as above... (0: ok,  -1: error).
+
+The export_error function:  If one of your functions wants to
+report an error, it has to use the export_error function.
+It's a printf like function to set error messages.  In alevt-cap
+these messages are printed to stderr, in alevt they will be
+shown in the status line (so don't make them too long).
+
+The last step is to add your export_module structure to the
+list of modules in export.c (at the top).
+Please, make sure that this structure is the only exported
+symbol.  All other things should be static.
+
+That's all.  A structure describing your module and 4 functions
+(open, close, option, output) to implement it.  Shouldn't be too
+complicated.
+
+Ciao, ET.

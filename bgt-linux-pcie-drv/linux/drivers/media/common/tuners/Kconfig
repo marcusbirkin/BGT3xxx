@@ -1,0 +1,65 @@
+config MEDIA_ATTACH
+	bool "Load and attach frontend and tuner driver modules as needed"
+	depends on VIDEO_MEDIA
+	depends on MODULES
+	help
+	  Remove the static dependency of DVB card drivers on all
+	  frontend modules for all possible card variants. Instead,
+	  allow the card drivers to only load the frontend modules
+	  they require.
+
+	  Also, tuner module will automatically load a tuner driver
+	  when needed, for analog mode.
+
+	  This saves several KBytes of memory.
+
+	  Note: You will need module-init-tools v3.2 or later for this feature.
+
+	  If unsure say Y.
+
+config MEDIA_TUNER
+	tristate
+	default VIDEO_MEDIA && I2C
+	depends on VIDEO_MEDIA && I2C
+	select MEDIA_TUNER_XC2028 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_XC5000 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_MT20XX if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_TDA8290 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_TEA5761 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_TEA5767 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_SIMPLE if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_TDA9887 if !MEDIA_TUNER_CUSTOMISE
+	select MEDIA_TUNER_MC44S803 if !MEDIA_TUNER_CUSTOMISE
+
+menuconfig MEDIA_TUNER_CUSTOMISE
+	bool "Customize analog and hybrid tuner modules to build"
+	depends on MEDIA_TUNER
+	default n
+	help
+	  This allows the user to deselect tuner drivers unnecessary
+	  for their hardware from the build. Use this option with care
+	  as deselecting tuner drivers which are in fact necessary will
+	  result in V4L/DVB devices which cannot be tuned due to lack of
+	  driver support
+
+	  If unsure say N.
+
+if MEDIA_TUNER_CUSTOMISE
+
+config MEDIA_TUNER_SIMPLE
+	tristate "Simple tuner support"
+	depends on VIDEO_MEDIA && I2C
+	select MEDIA_TUNER_TDA9887
+	default m if MEDIA_TUNER_CUSTOMISE
+	help
+	  Say Y here to include support for various simple tuners.
+
+config MEDIA_TUNER_TDA18271
+	tristate "NXP TDA18271 silicon tuner"
+	depends on VIDEO_MEDIA && I2C
+	default m if MEDIA_TUNER_CUSTOMISE
+	help
+	  A silicon tuner module. Say Y when you want to support this tuner.
+
+
+endif # MEDIA_TUNER_CUSTOMISE

@@ -1,0 +1,108 @@
+#!/bin/bash
+# Copyright (c) 2006-2007 Mauro Carvalho Chehab (mchehab@infradead.org)
+# This code is placed under the terms of the GNU General Public License v2
+#
+#This script is capable to mass import patches from a mercurial tree
+#
+
+if [ "$1" == "" ]; then
+	echo "Usage: $0 <url>"
+	exit
+fi
+
+if [ "$CHECKPATCH" == "" ]; then
+	CHECKPATCH="/lib/modules/`uname -r`/build/scripts/checkpatch.pl"
+fi
+
+TREE="`echo $1|perl -ne 's|[/]$||; s|^.*[/]||; print $_;'`"
+
+if [[ "`echo $1|grep ^http://`" != "" ]]; then
+	SITE="`echo $1|perl -ne 's|[/]$||; print $_;'`"
+	echo Pushing from remote site $SITE, tree: $TREE
+else
+	DIR=$1
+	echo "Pushing from local directory $DIR, tree=$TREE"
+fi
+
+if [ "$TMP" == "" ]; then
+	TMP=/tmp
+fi
+TMP=$TMP/newpatches
+if [ ! -d $TMP ]; then
+	mkdir $TMP
+else
+	rm $TMP/*
+fi
+
+if [ "$DIR" != "" ]; then
+	CS="`hg outgoing -R $DIR .|grep 'changeset:'|cut -f3 -d:`"
+else
+	CS="`hg incoming $SITE |grep 'changeset:'|cut -f3 -d:`"
+fi
+
+NUM="`echo $CS|wc -w`"
+echo Number of patches: $NUM
+
+j=1
+for i in $CS; do
+	name=$TMP/hg_${TREE}_$(printf %0${#NUM}d ${j}).patch
+	echo -n "$name with cs=$i "
+	if [ "$DIR" != "" ]; then
+		hg export -R $DIR $i >$name
+	else
+		wget -q -O $name "$SITE?cmd=changeset;node=$i;style=raw"
+	fi
+
+	# Do a simple consistency check
+	node_id=`cat $name|perl -ne 'if (m/# Node ID (.*)/) { print $1; }'`
+	parents="`cat $name|perl -ne 's/(# Parent .*)# Parent/\1/; if (m/# Parent (.*)/) { print "$1 "; }' | perl -ne 's/\s+/ /g; s/^\s+//; s/\s+$//; print $_'`"
+
+	if [ "$old_id" != "" ]; then
+		if [ "$parents" == "$old_id" ]; then
+			echo "Ok."
+		else
+			newname="$TMP/hg_${TREE}_$(printf %0${#NUM}d ${j}).merge"
+
+			echo "Nok/Merge:"
+			echo -e "\t\tOld node ID: $old_id"
+			echo -e "\t\tNode parents $parents"
+			echo -e "\t\tRenamed to $newname"
+			mv $name $newname
+
+			# Avoids incrementing if rename happens
+			j=$((j-1))
+		fi
+	else
+		last="`hg log -r -1|grep changeset`"
+		par="`hg log -r $parents|grep changeset`"
+
+		if [ "$last" == "$par" ]; then
+			echo "First against tip."
+		else
+			echo "First patch."
+			echo -e "Patch against an older patch:"
+			hg log -r $parents
+		fi
+	fi
+
+	old_id=$node_id;
+	j=$((j+1))
+done
+
+echo "Diffstat of the imported series:"
+diffstat -w 72 -p1 $TMP/hg_${TREE}_*.patch
+
+for i in $TMP/*.patch; do
+	err="`$CHECKPATCH -q --notree $i`"
+
+	if [ "$err" != "" ]; then
+		echo "$i:`grep -v \# $i |head -2`"
+		$CHECKPATCH -q --notree $i
+		echo
+	fi
+done
+
+echo To cherry pick all files, you can do something like:
+echo "for i in $TMP/*.patch; do ./mailimport \$i; done"
+echo "To merge it, the better is to run the merge script:"
+echo "./v4l/scripts/do_merge.pl $1"

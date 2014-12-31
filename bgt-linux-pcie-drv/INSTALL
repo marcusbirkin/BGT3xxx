@@ -1,0 +1,37 @@
+
+V4L/DVB building procedures are based at the use of Makefile rules.
+Those rules are close tho the ones at Linux Kernel, to allow an easier
+usage.
+
+=======================================================================
+Quick building procedure is:
+	make all
+======================================================================
+
+For those that may want more than just build all stuff there are some
+other interesting parameters to make:
+
+======================
+Normal building rules:
+all		- build all modules
+
+clean		- Cleans compiled files from the tree,
+		  but keeping the latest
+		  used configuration and kernel version
+
+distclean	- Cleans compiled files from the tree,
+		  latest used configuration and kernel
+		  version.
+
+default		- Continues building the latest module selection
+		  This is the behavior when just typed:
+			make
+
+install		- Installs all modules at kernel's default dir
+		  for V4L/DVB. Requires root access.
+
+rminstall	- cleans previous installations of V4L/DVB modules
+
+sound-install	- installs the sound modules related to V4L/DVB
+		  tree.
+

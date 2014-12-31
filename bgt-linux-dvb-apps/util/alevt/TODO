@@ -1,0 +1,12 @@
+Hi, these are issues that I unfortunately cannot resolve myself:
+
+1. graphical menu written in GKT2, to be used in general connection with
+    the outfile (-o) option.
+
+2. for usage without script and outfile option:
+    DVB monitoring demon helping the program to rewrite the PAT when the
+    external player software has chosen a channel which is part of a
+    new transponder.
+    At the moment alevt hangs when the transponder is changed.
+
+Uwe Bugla, February 11th, 2010.

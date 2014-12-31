@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ESGProviderDiscovery xmlns="urn:dvb:ipdc:esgbs:2005" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001">
+  <ServiceProvider>
+    <ProviderURI>http://www.sidsa.com</ProviderURI>
+    <ProviderName>SIDSA (Multiple Stream)</ProviderName>
+    <ProviderID>1</ProviderID>
+  </ServiceProvider>
+  <ServiceProvider>
+    <ProviderURI>http://www.sidsa.com</ProviderURI>
+    <ProviderName>SIDSA (Single Stream)</ProviderName>
+    <ProviderID>2</ProviderID>
+  </ServiceProvider>
+</ESGProviderDiscovery>

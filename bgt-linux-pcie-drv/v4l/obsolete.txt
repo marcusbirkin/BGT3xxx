@@ -1,0 +1,29 @@
+# This file was renamed to v4l2_compat_ioctl32
+video/compat-ioctl32
+
+# This file were replaced by videobuf-dma-sg and videobuf-core
+video/video-buf
+
+# This file were replaced by videobuf-dvb
+video/video-buf-dvb
+
+#This driver has been reworked and moved to dvb-usb
+dvb/cinergyT2/cinergyT2
+
+# Those drivers were moved to common/tuners
+dvb/frontends/mt2060
+dvb/frontends/mt2131
+dvb/frontends/mt2266
+dvb/frontends/qt1010
+dvb/frontends/tda18271
+dvb/frontends/tda827x
+dvb/frontends/xc5000
+video/mt20xx
+video/tda8290
+video/tda9887
+video/tea5761
+video/tea5767
+video/tuner-simple
+video/tuner-types
+video/tuner-xc2028
+

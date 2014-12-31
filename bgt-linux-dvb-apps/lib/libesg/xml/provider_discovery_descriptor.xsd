@@ -1,0 +1,22 @@
+<schema targetNamespace="urn:dvb:ipdc:esgbs:2005" xmlns:bs="urn:dvb:ipdc:esgbs:2005"
+	xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="urn:mpeg:mpeg7:schema:2001" />
+	<complexType name="ESGProviderType">
+		<sequence>
+			<element name="ProviderURI" type="anyURI"/>
+			<element name="ProviderName" type="mpeg7:TextualType"/>
+			<element name="ProviderLogo" type="mpeg7:TitleMediaType" minOccurs="0"/>
+			<element name="ProviderID" type="positiveInteger"/>
+			<element name="ProviderInformationURL" type="anyURI" minOccurs="0"/>
+			<element name="PrivateAuxiliaryData" type="anyType" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<element name="ESGProviderDiscovery">
+		<complexType>
+			<sequence>
+				<element name="ServiceProvider" type="bs:ESGProviderType" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

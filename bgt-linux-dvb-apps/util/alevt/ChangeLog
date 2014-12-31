@@ -1,0 +1,535 @@
+Thu Feb 11 22:05:00 MET 2010	(1.7.0)
+
+    - redesigned version:
+    - outfile, new starting methods, libzvbi implementation
+    - lots of bug fixes, all patches available in the Internet applied
+    - extensive code cleanup
+
+Mon Dec  3 03:11:07 MET 2007	(1.6.2)
+
+    - compilation fixes for newer gcc
+    - makefile tweaks (man vs share/man, /usr/X11R6 vs /usr, etc)
+    - default device changed to /dev/vbi0
+    - adapt to current v4l2 api
+    - some minor fixes collected during the past years
+
+    This is a build-time update to conform to newer compilers and
+    system environments.  If you have a running AleVT there's no
+    reason to update.  The only real fix is in the html-exporter
+    which was producing broken html (missing double-quotes).
+
+Thu Jan 23 01:53:10 MET 2003
+
+    - Fixed a bug in contrib/cap-all.c (fdset_init before vbi_open)
+    - Expaned cap-all.c to show how to save in two formats simultaneously.
+
+Tue Aug 20 05:22:16 MEST 2002	(1.6.1)
+
+    - Removed the bttv-warning from the help pages ;-)
+
+Mon Jul 23 18:34:32 MEST 2001
+
+    - Fixed bug in ui.c - found by <pawel@sakowski.eu.org>.
+    - When clicking on page numbers accept sub-page numbers too.
+
+Sat Dec 23 15:12:11 MET 2000
+
+    - Fixed 'double height last line' bug in export.c reported by
+      <Matthias.Kleinmann@urz.uni-heidelberg.de>
+
+Thu Oct 12 02:19:31 MEST 2000
+
+    - The &nbsp; fix was wrong.  Removed it.
+
+Wed Oct 11 19:41:38 MEST 2000	(1.6.0)
+
+    - Some documentation tweaks.
+    - Release.  Made it 1.6 because of V4l2 API.
+
+Thu Sep 21 21:07:12 MEST 2000
+
+    - Removed old bttv-only decoder.  Only the v4l2-based stays.
+      If the device does not support v4l2, default parameters
+      appropriate for the bttv-driver are taken.
+    - Subpage cycling (up/down and 2nd wheel) stays in the current
+      page.
+
+Sat Sep 16 23:52:12 MEST 2000
+
+    - Experimental v4l2 interface added.
+    - Finetune defaults to 1 now.  Works best for me.  Tell me
+      if you don't like it.
+    - Russian patch still not added :-/
+    - Fixed the bug in xio.c that Ben Smithurst
+      <ben@scientia.demon.co.uk> found.
+    - Added the dual-wheel-mouse patch from Holger Fitzner.
+
+Tue May 30 03:09:24 MEST 2000
+
+    - As Matto Fransen <matto@matto.nl> reported: the ; after &nbsp
+      in exp-html is missing.  fixed that.
+
+Tue May  9 20:21:52 MEST 2000
+
+    - Removed the -oldbttv/-newbttv options.  If your driver has
+      a buffer size different from that in the current bttv you
+      either have to support the VBISIZE ioctl or change the source.
+      (Tried to implement an autodetect by non-blocking reads but
+      that confuses the driver that much that it no longers gives
+      reasonable data.)
+    - Added a compression option to the png export filter and
+      changed the default compression level to the lib's default.
+      The prev default of 9 was way to slow.
+
+Wed May  3 19:18:55 MEST 2000
+
+    - Added a smaller font.  Made out of the neep9 font from
+      the really great jmk-fonts (http://www.pobox.com/~jmknoble).
+
+Sat Apr 29 02:36:41 MEST 2000
+
+    - Fixed SEGV in export.c:adjust.
+    - Fixed a possible buffer overrun in exp-txt.c
+
+Thu Nov  4 21:18:52 MET 1999	(1.5.1)
+
+    - Added os.h.  That way alevt compiles right out of the
+      box on all BSD systems (I hope *g*).
+    - Fixed the DST bug in alevt-date.
+    - Put vtwiz.pl in contrib, a perl/tk/set-tv script to
+      launch alevt written by Joern Borgert.
+
+Tue Oct 26 23:55:09 MEST 1999	(1.5.1-pre1)
+
+    - Added timeout option to alevt-cap.
+    - Use install instead of cp in the Makefile.
+    - Added -I/usr/local/include and -L/usr/local/lib
+      in the Makefile.
+    - Changed #ifdef FREEBSD to #ifdef BSD.
+    - exchanged contrib/paul-export.patch with
+      paul.fmt_page.c (a replacement for export.c:fmt_page())
+      and paul.fmt_page.patch (the same in form of a
+      patch file).
+    - Some doc corrections.
+
+Thu Oct 14 02:49:48 MEST 1999
+
+    - Added FREEBSD patches.
+
+Fri Oct  8 23:36:45 MEST 1999	(1.5.0)
+
+    - Updated the documentation.
+
+    So, what's new since 1.4.9 (nearly 4 months ago)?
+    Two major things: full latin-2 support and export
+    filters for alevt-cap and alevt itself.
+
+    For the latin-2 support page enhancement packets
+    have to be decoded and some latin-1 pages may
+    benefit from that, too.  Note: if you select
+    latin-2 everything is latin-2, even cut'n paste.
+    (new cmdline option -charset latin-1|2)
+
+    The export filters allow saving pages in different
+    formats.  At the moment there's ascii (with and with-
+    out color), html, png, and ppm.  The png filter
+    requires libpng.  If you don't have it (or don't want
+    png support) just remove the WITH_PNG from the
+    Makefile.  To save the currently displayed page just
+    press 's'.  See alevt-cap(1) for the format string.
+
+    Preview: 1.5.1 will have the FreeBSD patches and
+    any bug fixes.  (But not more *g*).
+
+Fri Oct  8 02:06:35 MEST 1999	(1.5.0-pre4)
+
+    Finally I could get away from my Playstation and
+    work a little bit on alevt *g*
+
+    - Tried to change alevt-date with freebsd patches from
+      Thomas Runge <runge@rostock.zgdv.de>.  They do not
+      have the timezone and daylight variables.  But I do
+      not have tm_gmtoff.  So it's commented out for the
+      moment.
+    - Made font.[ch] so that only one copy of the fonts is
+      in the executable when including export modules
+      (exp-gfx.c uses them).  Had to tweak the makefile.
+    - Added 's' for saving pages to files.  Prompts for
+      a format string and a filename and saves the
+      currently displayed page.
+      (Formerly, 's' and 'S' were aliases for '/' and '?'
+      (searching))
+    - Found a bug in export.c regarding double height lines.
+    - Added a patch to the contrib dir to pass the URL you
+      click on to netscape.
+
+    The documentation updates are still missing.  That's
+    the last thing to do for 1.5.0.  But that's so boring...
+
+Fri Aug 20 21:28:18 MEST 1999
+
+    Back from holidays and time for alevt...
+
+    - Added html, png, and ppm export modules from Paul.
+    - Fixed the return status for export_output.
+    - Tweaked the makefile for libpng support.
+    - Added the export howto to the contrib dir.
+    - Added Paul's fmt_page routine to contrib as a patch
+      to export.c
+    - Added "-format help" to list all output formats and
+      its options.
+
+    Still to do: update man page of alevt-cap, add export
+    to alevt, add erc to alevt-cap.
+
+    Oh, btw, alevt is running on FreeBSD with the bt848
+    driver from Roger Hardiman <roger@cs.strath.ac.uk> *g*.
+    I wonder if it's possible to port his driver to linux.
+    Maybe it runs better then bttv... (I still get reports
+    with stuck xawtvs ...)
+
+Mon Jul 19 01:15:50 MEST 1999	(1.5.0-pre3)
+
+    - Added export modules.  It's gotten much to complex.
+
+    A lot of things still to do:  add other formats [Paul?],
+    add documentation, add format-help, add export to alevt,
+    add erc to alevt-cap, ...
+
+Mon Jul 12 00:09:03 MEST 1999
+
+    - Added an incomplete 20x24 font to the contrib dir.
+
+Tue Jun 29 00:46:03 MEST 1999	(1.5.0-pre2)
+
+    - Added lanugage tables from Radoslaw.
+    - Added new latin-2 font from Radoslaw.
+    - Fixed a bug with hold graphics.  There's still one bug
+      on CNN's page 100 (has to do with set-after behaviour of
+      color select in hold graphics mode).  The last line of the
+      earth should be blue-blue-green not blue-green-green.
+      AleVT always uses set-at behaviour.  Afaik, this combination
+      (hold + set-after) is the only way to see the difference
+      between set-at and set-after.  Set-after will blow up the
+      code so I will leave it as it is.
+    - vbi now collects all pkt26 and enhances the page before
+      it is passed on.  Seem's to work.
+
+Tue Jun 22 22:13:45 MEST 1999	(1.5.0-pre1)
+
+    - Fixed hamm24.  And, it should be fast now *g*
+    - Moved the language conversion parts to lang.c
+    - Added additional lang_chars for use with the latin-2 charset.
+    - Added -charset latin-1/2 option.
+    - Added pkt x/26 decoding.  ... and noticed, that these packets
+      are sent between line 0 and 1.  FUCK.  Now I have to save
+      all x/26 until the page is complete.  But not today... :-(
+
+      Things are getting more and more uglier.  The right thing
+      to do would be to make a big font with all possible chars
+      (including cyrillic, arabic, smoothed graphics, ...).
+      That would mean to make each char in vtp->data 16 bit.  
+      And then add an attribute word for each char so that the
+      enhanced attributes work, too.  Searching and cut & paste
+      would be more complicated...  but the worst, the pages
+      will be much bigger (4 times larger).  Really bad for
+      the cache and god knows for what else...
+      Is it worth all the trouble???  I don't need that!
+
+Tue Jun 15 01:25:40 MEST 1999
+
+    - Changed .specs file again.  I previously changed alevt.spec
+      instead of alevt.spec.in :-(
+
+Mon Jun 14 23:45:48 MEST 1999	(1.4.9)
+
+    - Made a very simple capture program (alevt-cap).  Just collects
+      the given pages and writes them to disk in ASCII.
+      I will only accept bug reports/fixes, no enhancement requests 
+      at the moment *g*
+      (I can't believe it; I even wrote a man page...)
+    - Changed the subpage delimiter on the command line from '/' to '.'
+      The old one ('/') is still accepted.  (Reason: alevt-cap uses
+      the page number as part of the filename and a / is inconvenient.
+      And I already wanted to let you enter subpages with the keypad
+      and the '.' would be a nice key for that.)
+    - Tweaked the .specs file...  (Btw, alevt-date and alevt-cap should
+      not be installed in the X11 tree.)
+
+Thu Jun 10 22:13:40 MEST 1999
+
+    - moved the hamming decoding and associated table to hamm.c
+    - played with pkt26 to support polish stations.  not finished.
+
+Tue Jun  8 21:00:42 MEST 1999
+
+    - Added -[no]bell option.  And the 'b' key.
+    - Replaced all xio_bell calls with appropriate status messages.
+
+Sat Jun  5 00:42:19 MEST 1999	(1.4.8)
+
+    - Shit.  Just after the release I found a bug.  The header line
+      isn't updated as it should :-(  (Just affects parallel mode
+      transmission, so no new version, yet.)
+    - Created mailing list.  Either go to http://alevt.listbot.com/
+      or write mail to alevt-subscribe@listbot.com.
+    - Added bttv-patch to the contrib dir for those who don't want
+      to wait for bttv-0.6.5.
+
+Fri Jun  4 17:19:41 MEST 1999	(1.4.7)
+
+    - Added autodetection of VBIBUF_SIZE (only with newer bttv, 0.6.5).
+    - Forgot to close vbi_fd in vbi_close :-/
+    - Made ERC on by default.  If the page has no errors it
+      costs nothing and if it has you'll turn it on anyway.
+    - Changed parameters of EV_HEADER.
+    - Removed XAWTV_HACKS.
+    - Updated some docu.
+    - Modified the contrib samples to reflect previous API changes.
+
+Fri May 28 20:16:44 MEST 1999
+
+    - Added status messages.
+    - Added EV_TIMER event.
+    - Added channel change detection (only with newer bttv, 0.6.5).
+      Sends EV_RESET event.  The XAWTV_HACKS can be removed *phww*.
+      Now the cache is automatically cleared if you switch to a
+      new channel.  It even works with a SAT receiver connected to
+      Video-In.
+
+Thu May 27 23:54:32 MEST 1999	(1.4.6 unofficial)
+
+    - Cache reset didn't reset npages and hi_subno.
+    - Added XAWTV_HACKS, that is: alevt scans for a window with
+      the _XAWTV_STATION property and registers for property changes.
+      Result: when switching channels in xawtv, the cache is cleared.
+      (This is just an ugly hack.  Xawtv must already be running
+      when alevt is started.  If you quit and restart xawtv, it no
+      longer works.  There's no method to detect if the monitored
+      xawtv is really the one controlling our /dev/vbi, etc...)
+      Added on request of Paul Ortyl <ortylp@key.net.pl>.
+    - Added error reduction circuit.  It's part of the cache.
+      Errors in a new page are replaced by characters/lines from
+      an already cached (older) page.  May be toggled by pressing
+      'e' (editor is now on 'E').  It's not enabled by default
+      because it takes some CPU time.  Idea by Paul Ortyl.
+    - TODO: clean up.  document new features.  add status messages.
+
+Sun May 23 19:13:07 MEST 1999	(1.4.5)
+
+    - New spec file from Karsten Hopp <karsten.hopp@delix.de>
+    - Changed it even further *g*
+    - Fixed a bug with graphics selection of double height lines.
+    - Documented the -oldbttv option in the man page.  Now it's in
+      every page.  This should finally halve the mails I get.
+      (For the other halve I have to write alevt-capture *g*)
+
+Sat May  8 02:41:21 MEST 1999
+
+    - Ehhh, changed u32 typedef from unsigned long to unsigned int.
+      Same for s32.  The Alpha's longs are 64 bits.
+      Thanks to Sdruddin Rejeb <rejeb@dpmail.epfl.ch>.
+      (There's something strange with this in the X libs.  They are
+      sometimes very lazy about ints and longs.  Someone with an
+      Alpha should check the cut & paste, both, text and graphics
+      selections.)
+
+Thu Apr 29 22:38:37 MEST 1999
+
+    - Updated contrib/t1.c
+    - Added ':' as a subpage delimiter for clicking (2:7 is the same as 2/7)
+
+Mon Apr 19 19:40:09 MEST 1999
+
+    - Switched the scrolling direction of the wheel
+
+Mon Mar 29 01:23:06 MEST 1999	(1.4.4)
+
+    - fixed DST bug in alevt-date
+    - added crude latin-2 support.  'make FONT=latin-2' should be enough.
+      (found the stuff on the website http://www.penguin.cz/~marvin/ of
+      Daniel Smolik <smolikdan@email.cz>.  I don't know if he is the one
+      who made the font).
+
+Wed Mar 17 20:53:59 MET 1999
+
+    - added timeout to alevt-date
+
+Fri Feb 19 18:22:53 MET 1999	(1.4.3>
+
+    - Makefile changes.
+
+Fri Jan 29 18:01:27 MET 1999
+    
+    - fixed bug in dllist.h.  dl_insert_first(h, dl_remove(n)) was only
+      working due to gcc implementation details.
+
+Mon Jan 25 18:33:42 MET 1999	(1.4.2)
+
+    - fixed 'clear cache'.  no longer removes the help pages.
+    - made next/prev key/button to skip missing pages.
+    - added support for wheeled mice.  (I heard it's really cool *g*)
+    - problem with subpages > 0xff fixed.
+
+Thu Jan 21 17:31:46 MET 1999	(1.4.1)
+
+    - added man pages from Thomas Schoepf <schoepf@usa.net>.
+    - added rpm-spec file from Mario Mikocevic <mozgy@times.hr>.
+      (looks a little bit odd, but I don't know very much about rpms)
+    - minor option fix in alevt-date (people are really using it!?!)
+
+Tue Jan  5 03:50:08 MET 1999	(1.4.0)
+
+    - should be 1.3.10 but that gives problems with the help pages :-(
+    - fixed varargs for alpha
+    - default is now -newbttv (aka -fuckbttv).  use -oldbttv for v<0.5.20.
+
+Sat Jan  2 21:40:54 MET 1999
+
+    - small patches to alevt-date (-vbi options and tzset fix)
+    - played with pkt8/30.  what a mess.  MTV is 25:13 ahead *g*
+
+Wed Dec 30 19:30:14 MET 1998	(1.3.9)
+
+    - slightly modified the pll (may need further tuning)
+
+Wed Dec 30 05:27:26 MET 1998	(1.3.8)
+
+    - added pll (-finetune auto).  try -debug for status msgs.
+
+Tue Dec 29 05:15:53 MET 1998	(1.3.7)
+
+    - added finetune option (see README)
+    - you may now type -newbttv instead of -fuckbttv *g*
+
+Mon Dec 28 19:36:32 MET 1998	(1.3.6)
+
+    - Makefile: R5 -> R6  :-(
+    - vbi.c now works without cache.c
+    - added alevt-date (set system time from teletext)
+    - bug in option parsing (error reporting)
+
+Thu Dec 17 19:56:16 MET 1998	(1.3.5)
+
+    - added -L/usr/X11R6/lib in Makefile
+    - put some blurb (in german) in contrib.
+
+Thu Dec 17 05:01:34 MET 1998	(1.3.4)
+
+    - added class hints on (invisible) leader window to make docking
+      in wmaker easier.  instant name for leader is "VTLeader" and for
+      the viewing windows "VTPage"
+    - made the icon a little bit smaller
+
+Mon Dec 14 23:05:41 MET 1998	(1.3.3)
+
+    Release 1.3.3
+
+    - added spanish/portuguese charset decoding
+    - added similar looking glyphs for czech
+    - minor changes on the font
+    - middle click on current page number opens new parent window
+    - case dependant search if the pattern begins with a '!'
+    - line editing may be aborted with ^C
+
+Sun Dec 13 17:55:32 MET 1998	(1.3.2)
+
+    - when there were multiple windows of the same page, cycling through
+      the subpages changed all windows.  fixed.
+    - hilight the found text (make it the selection).
+    - slightly modified the hilight colors.
+    - default window size set to 41x25 (looks better).
+    - rewrote the editor.
+
+Sun Dec 13 07:03:10 MET 1998	(1.3.1)
+
+    - fixed one command line option
+    - corrected bug in searching
+
+Sat Dec 12 20:27:03 MET 1998	(1.3.0)
+
+    Release 1.3.0
+
+    - searching is now ready (still need a status line for error msgs).
+    - set SIGPIPE to SIG_DFL.  some shells (KDE) set it to SIG_IGN and then
+      the timer task won't be killed on exit.
+    - updated the help pages.
+    - I'm frustrated!  BTTV_VERSION doesn't work on /dev/vbi.  So no
+      autodetection of driver version.  Added -fuckbttv option instead.
+
+Fri Dec 11 19:36:03 MET 1998	(1.2.5)
+
+    - reworked national charset (lang) handling.  everthing now done in vbi.c.
+      the rest just deals with latin-1.
+    - first version of searching (functional, but dirty.  needs more work.)
+
+Thu Dec 10 20:06:27 MET 1998	(1.2.4)
+
+    - new file edline.c (line editor for the menu line. start for searching...)
+    - blinking cursor
+    - added an 48x48 icon from Ulf Rompe
+    - added pasting into the line editor (insert key).
+    - release ownership of XA_PRIMARY when deselecting selection.
+
+Tue Dec  8 21:26:26 MET 1998	(1.2.3)
+
+    - new file ui.c (most user interface stuff from main.c)
+    - rewrote option parsing
+    - allow specification of child windows on command line. now
+      it's possible to regenerate the complete window layout by
+      the commandline (may be of some use for session management).
+    - some spelling fixes in the help pages from Mark Bryars
+
+Mon Dec  7 16:59:28 MET 1998	(1.2.2)
+
+    - reworked hidden handling in xio.c
+
+Sun Dec  6 19:54:10 MET 1998	(1.2.1)
+
+    - class name changed!  from Alevt to AleVT.
+    - window/icon title shows current page number
+    - changed the icon to a 64 pixel width one.  not nice but ...
+    - added a small mini icon for the title bar. is there a property I can set?
+    - pressing on the CPN puts the page on hold
+    - pressing on the violet * reveals concealed text
+    - added simple menu if no FastText menu is present
+    - allow subpages to be specified on the command line (eg 100/4)
+
+Sat Dec  5 20:59:51 MET 1998	(1.2.0)
+
+    Release 1.2.0
+
+    - finished the help pages.
+    - added command line handling
+    - added user geometry handling in xio.c
+
+Sat Dec  5 02:28:16 MET 1998	(1.1.2)
+
+    - allow magazin 9 (help system)
+    - start box char after a pagenumber selects subpage 1 (hack)
+    - added a crude page editor (just to create the help pages.  not for users.)
+    - started with the online help system (sounds great, hehe)
+
+Tue Dec  1 20:19:53 MET 1998	(1.1.1)
+
+    - added concept of parent and child windows.  now, the middle mouse
+      button changes the contens of the child window.  if there isn't
+      one, it is created.
+    - Middle mouse button on x/y (subpage cycling) selects the previous
+      subpage.  (updating the child with subpages is hairy...)
+
+Sun Nov 29 23:34:18 MET 1998	(1.1.0)
+
+   Release 1.1.0
+
+   - removed most of the recovery for single bad lines (does too much harm)
+   - changed handling of parallel mode transmission (untested.  unused in .de)
+   - added selection (text & graphic!).  try pasting into xpaint :-)
+   - added cache-clear function ('c')
+   - click on x/y selects the next subpage
+   - some minor tweaks
+   - added an icon bitmap.
+
+Wed Nov 24 23:33:34 MET 1998	(1.0.0)
+
+    First Release 1.0.0

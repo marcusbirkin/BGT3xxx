@@ -1,0 +1,53 @@
+.TH alevt-cap 1 "February 07, 2010"
+.SH NAME
+alevt-cap \- capture teletext windows.
+.SH SYNOPSIS
+.B alevt-cap
+.RI [ options ]
+.br
+.SH DESCRIPTION
+This manual page documents briefly the
+.B alevt-cap
+commands.
+.PP
+\fBalevt-cap\fP is a program to capture teletext pages.
+.SH OPTIONS
+.TP
+.B \-cs -charset <latin-1/2/koi8-r/iso-8859-7>
+character set
+.TP
+.B \-f -format <fmt[,options]>
+format to save
+.TP
+.B \-f help -format help
+lists available storage formats
+.TP
+.B \-h -help
+print this page
+.TP
+.B \-n -name <filename>
+page name to save
+.B \-t -timeout <secs>
+timeout
+.TP
+.B \-s -sid <sid>
+service pid
+.TP
+.B \-t -ttpid <ttpid>
+teletext pid
+.TP
+.B \-v -vbi <vbidev>
+vbi device
+.TP
+Sequence: /dev/vbi; /dev/vbi0; /dev/video0; /dev/dvb/adapter0/demux0
+.TP
+ppp.ss stands for a page number and an optional
+subpage number (example: 123.4).
+.TP
+.SH SEE ALSO
+.BR alevt-date (1) , alevt (1).
+.br
+.SH AUTHOR
+alevt-cap was written by Edgar Toernig <froese@gmx.de>.
+.PP
+This manual page was written by Uwe Bugla <uwe.bugla@gmx.de>.

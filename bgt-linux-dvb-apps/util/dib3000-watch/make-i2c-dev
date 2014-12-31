@@ -1,0 +1,6 @@
+for i in `seq 0 10`;
+do
+	mknod /dev/i2c-$i c 89 $i
+	chown root.video /dev/i2c-$i
+	chmod 664 /dev/i2c-$i
+done

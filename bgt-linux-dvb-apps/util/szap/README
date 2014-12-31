@@ -1,0 +1,52 @@
+Hi,
+
+this are some trivial zapping applications explaining how to use the frontend
+and demux API. They are also pretty useful to test your hardware.
+
+For DVB-S, Astra Channel config file:
+
+$ ./szap -c channels-conf/dvb-s/Astra-19.2E n24
+
+will tune to N24. For DVB-C, Berlin Cable channel config:
+
+$ ./czap -c channels-conf/dvb-c/de-Berlin Arte
+
+For DVB-T, Berlin Config:
+
+$ ./tzap -c channels-conf/dvb-t/de-Berlin phoenix
+
+For ATSC, Raleigh Durham Config:
+
+$ ./azap -c channels-conf/atsc/us-Raleigh-Durham WRAL
+
+will tune to WRAL's Digital Channel 5-1.
+
+By default the MPEG stream is routed to a hardware decoder. If you want to
+record the stream to disk you will route it to the DVR device by using the
+'-r' option:
+
+$ ./tzap -c channels-conf/dvb-t/de-Berlin phoenix -r
+[keep it running in one console]
+$ cat /dev/dvb/adapter0/dvr0 > /tmp/recording.ts
+[in a second console, will dump the MPEG transport stream to /tmp/recording.ts]
+
+The status messages have the following meaning:
+
+status 0x1f              --- The demodulator status bits.
+			      0x1f means all bits set, everything ok.
+
+signal [0x0000...0xffff] --- Signal Strength. Values above 0x8000 should be ok.
+
+snr [0x0000...0xffff]    --- Signal/Noise Ratio. Values above 0x8000 are ok.
+
+ber [0...0xffffffff]     --- Bit Error Rate. The less the better.
+
+unc [0...0xffffffff]     --- Number of Uncorrectable Blocks.
+			     Small numbers are Preferable.
+
+If everything is alright and all frontend circuits are working stable
+(are locked) you should see a FE_HAS_LOCK in the rightmost line.
+
+Good luck,
+
+Holger

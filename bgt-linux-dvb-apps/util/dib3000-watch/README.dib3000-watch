@@ -1,0 +1,29 @@
+This is a small tool for gathering and evaluating more reception-related data
+from the dib3000-demodulators, than the DVB-API currently makes use of.
+
+It uses the i2c-dev-interface. In order to use it, you have to enable i2c-dev
+in your kernel.  The module i2c-dev is loaded automatically, when you want to
+access the /dev/i2c-*-node.
+
+If your distribution hasn't create the /dev/i2c-*-nodes you can use the
+make-i2c-dev-script located its source directory.
+
+It is not yet completed, but works fine for all dib3000mb-demods (all of the
+USB1.1 dibusb-devices are equipped with it).
+Having a CSV output would certainly be useful, when you want to make range
+tests by driving around with your car and check the signal. Nevertheless,
+this isn't written yet, but should be easy-going. Each line then should
+have an timestamp.
+
+I cannot guarantee for the values this program calculates, I'm not a signal
+expert, thus I don't know if they are correct.
+
+Thanks to Amaury Demol from DiBcom, who provides source for showing me how to
+calculate frequencies from the demod values.
+
+Patrick Boettcher <patrick.boettcher@desy.de>
+
+PS: Please feel free to modify the source to fullfil your wishes. But please
+remember, it is released under the GPL, thus please send back patches to the
+author or to the linux-dvb mailing list, so other users can have benefit from
+it.

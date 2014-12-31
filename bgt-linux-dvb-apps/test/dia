@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for f in $@
+do /usr/X11R6/bin/convert  -geomtry 702x576 $f test.mpg
+test_video test.mpg
+rm test.mpg
+done

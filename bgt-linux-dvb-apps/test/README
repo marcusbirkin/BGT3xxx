@@ -1,0 +1,50 @@
+Various small test/sample programs for the Linux DVB API Version 2/3
+
+The default devices used by the test programs are generally
+/dev/dvb/adapter0/*0, and can be overridden using environment
+variables:
+
+  FRONTEND=/dev/dvb/adapter0/frontend0
+  DEMUX=/dev/dvb/adapter0/demux0
+  DVR=/dev/dvb/adapter0/dvr0
+  AUDIO=/dev/dvb/adapter0/audio0
+  VIDEO=/dev/dvb/adapter0/video0
+  NET=/dev/dvb/adapter0/net0
+
+
+diseqc		: Send various diseqc sequences on a SAT frontend.
+		  Best used with a diseqc test box with some LEDs to
+		  show the result of the commands.
+set22k		: Legacy tone switching for SAT frontends.
+setvoltage	: Legacy voltage switching for SAT frontends.
+
+setpid		: Set video and audio PIDs in the demux; useful only
+		  if you have a hardware MPEG decoder.
+video		: A tiny video watching application, just starts capturing /dev/video
+		  into /dev/fb0.
+		  WARNING: May crash your box or mess up your console!
+
+test_sections	: Hex dump of section data from stream.
+test_sec_ne	: Like test_sections, but also test Not-Equal filter mode.
+test_pes	: Hex dump of PES data from stream.
+test_tt		: Demonstrate teletext decoding from PES data.
+test_av		: Test audio and video MPEG decoder API.
+test_vevent	: Test VIDEO_GET_EVENT and poll() for video events
+test_stc	: Test DMX_GET_STC.
+
+test_stillimage : Display single iframes as stillimages
+		  iframes can be created with the 'convert' tool from
+		  imagemagick and mpeg2encode from ftp.mpeg.org, and must
+		  have a supported size, e.g. 702x576
+		  ($ convert -sample 702x576\! test.jpg test.mpg)
+
+test_av_play	: Test playing MPEG PES (VDR format) from a file
+test_dvr_play	: Test playing MPEG TS from a file (don't try, driver is broken)
+
+test		:
+test_audio	:
+test_dmx	:
+test_dvr	:
+test_front	:
+test_switch	:
+test_video	: Play video-only file on /dev/dvb/adapter0/video0

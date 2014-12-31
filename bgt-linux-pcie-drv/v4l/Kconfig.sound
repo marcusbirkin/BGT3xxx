@@ -1,0 +1,39 @@
+menu "Audio devices for multimedia"
+
+# This is part of sound/pci/Kconfig
+comment "ALSA sound"
+
+config SND_BT87X
+	tristate "Bt87x Audio Capture"
+	depends on SND && PCI
+	select SND_PCM
+	help
+	  If you want to record audio from TV cards based on
+	  Brooktree Bt878/Bt879 chips, say Y here and read
+	  <Documentation/sound/alsa/Bt87x.txt>.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called snd-bt87x.
+
+config SND_BT87X_OVERCLOCK
+	bool "Bt87x Audio overclocking"
+	depends on SND_BT87X
+	help
+	  Say Y here if 448000 Hz isn't enough for you and you want to
+	  record from the analog input with up to 1792000 Hz.
+
+	  Higher sample rates won't hurt your hardware, but audio
+	  quality may suffer.
+
+config SND_FM801_TEA575X
+	tristate "ForteMedia FM801 TEA5757 tuner"
+	depends on VIDEO_V4L1 && SND_FM801
+
+	help
+	  Say Y here to include support for soundcards based on the ForteMedia
+	  FM801 chip with a TEA5757 tuner connected to GPIO1-3 pins (Media
+	  Forte SF256-PCS-02) into the snd-fm801 driver.
+
+	  This will enable support for the old V4L1 API.
+
+endmenu

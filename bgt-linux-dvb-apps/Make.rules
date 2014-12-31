@@ -1,0 +1,104 @@
+# build rules for linuxtv.org dvb-apps
+
+CFLAGS ?= -g -Wall -W -Wshadow -Wpointer-arith -Wstrict-prototypes
+
+ifneq ($(lib_name),)
+
+# additional rules for libraries
+
+CFLAGS_LIB ?= -fPIC
+CFLAGS += $(CFLAGS_LIB)
+
+libraries = $(lib_name).so $(lib_name).a
+
+.PHONY: library
+
+library: $(libraries)
+
+$(libraries): $(objects)
+
+endif
+
+prerequisites = $(subst .o,.d,$(objects)) $(addsuffix .d,$(binaries))
+
+.PHONY: clean install
+
+ifeq ($(static),1)
+LDFLAGS += -static
+endif
+
+prefix ?= /usr
+
+bindir     ?= $(prefix)/bin
+includedir ?= $(prefix)/include
+libdir     ?= $(prefix)/lib
+sharedir   ?= $(prefix)/share
+
+ifneq ($(DESTDIR),)
+DESTDIR := $(DESTDIR)/
+endif
+
+ifeq ($(V),1)
+%.o: %.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -MMD -o $@ $< $(filter-out %.h %.c,$^)
+%: %.o
+	$(CC) $(LDFLAGS) -o $@ $^ $(LOADLIBES) $(LDLIBS)
+%: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD $(LDFLAGS) -o $@ $< $(filter-out %.h %.c,$^) $(LOADLIBES) $(LDLIBS)
+%.so:
+	$(CC) -shared -o $@ $^
+%.a:
+	$(AR) rcs $@ $^
+clean::
+	$(RM) -f $(prerequisites) $(objects) $(libraries) $(binaries) $(removing) *~
+install::
+ifneq ($(includes),)
+	mkdir -p $(DESTDIR)$(includedir)/$(lib_name)
+	install -m 644 $(includes) $(DESTDIR)$(includedir)/$(lib_name)/
+endif
+ifneq ($(libraries),)
+	mkdir -p $(DESTDIR)$(libdir)
+	install -m 644 $(libraries) $(DESTDIR)$(libdir)/
+endif
+ifneq ($(inst_bin),)
+	mkdir -p $(DESTDIR)$(bindir)
+	install -m 755 $(inst_bin) $(DESTDIR)$(bindir)/
+endif
+else
+%.o: %.c
+	@echo CC $@
+	@$(CC) -c $(CPPFLAGS) $(CFLAGS) -MMD -o $@ $< $(filter-out %.h %.c,$^)
+%: %.o
+	@echo CC $@
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LOADLIBES) $(LDLIBS)
+%: %.c
+	@echo CC $@
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -MMD $(LDFLAGS) -o $@ $< $(filter-out %.h %.c,$^) $(LOADLIBES) $(LDLIBS)
+%.so:
+	@echo CC $@
+	@$(CC) -shared -o $@ $^
+%.a:
+	@echo AR $@
+	@$(AR) rcs $@ $^
+clean::
+	@echo cleaning
+	@$(RM) -f $(prerequisites) $(objects) $(libraries) $(binaries) $(removing) *~
+install::
+ifneq ($(includes),)
+	@echo installing headers
+	@mkdir -p $(DESTDIR)$(includedir)/$(lib_name)
+	@install -m 644 $(includes) $(DESTDIR)$(includedir)/$(lib_name)/
+endif
+ifneq ($(libraries),)
+	@echo installing libraries
+	@mkdir -p $(DESTDIR)$(libdir)
+	@install -m 644 $(libraries) $(DESTDIR)$(libdir)/
+endif
+ifneq ($(inst_bin),)
+	@echo installing binaries
+	@mkdir -p $(DESTDIR)$(bindir)
+	@install -m 755 $(inst_bin) $(DESTDIR)$(bindir)/
+endif
+endif
+
+-include $(prerequisites)

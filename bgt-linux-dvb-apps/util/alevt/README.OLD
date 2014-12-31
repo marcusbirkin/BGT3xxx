@@ -1,0 +1,78 @@
+Hi,						Menden, 21 Sep 2000
+
+    This program decodes and displays Videotext/Teletext from a
+    /dev/vbi device.
+
+
+COMPILE & INSTALL:
+
+    There's nothing to configure.  A simple 'make' is all.
+    If you do not want png support remove the WITH_PNG in
+    the Makefile.  Additionally, if you want a smaller font
+    uncomment the "FONT=neep9" line.
+
+    It gives you 'alevt', 'alevt-date', and 'alevt-cap' and
+    their man pages 'alevt.1x', 'alevt-date.1', and 'alevt-cap.1'.
+
+    You can install them where ever you want (i.e. /usr/local/bin).
+    The programs are self-contained and require no other files.
+
+    NOTE: Be careful with 'make install'.  It's just for me :-)
+
+
+PROBLEMS:
+
+    If you have a lot of decoding errors (lot of these lightning symbols)
+    you may try pressing the 'f' and 'F' key.  This allows fine tuning of
+    the decoder circuit.  There's also a -finetune command line option.
+    This should only be necessary on really bad signals.
+
+    Maybe, I add autotuning later...
+
+    UPDATE: added autotuning.  It's the default.  If you add -debug the
+    the actions of the pll are printed to stdout.
+
+    To get the old (pre finetune) behaviour start it with -finetune 0.
+
+    UPDATE: disabled autotuning *g*  sometimes it's too jumpy...
+
+
+ALEVT-DATE:
+    I added a little tool to set the system time from the videotext
+    time.  The date is not interpreted (not even transmitted on some
+    channels).  So it allows only adjustment of +/-12 hours.
+    The default allowed adjustment is limited to +/-2 hours (use
+    -delta to change).  Without the -set option it just display
+    the date in the format of the date command.  Look at strftime(3)
+    for possible control sequences you may use in the -format option.
+
+
+HACKING:
+
+    If you want to play with the font size, you may resize it with
+    xv (xv font1.xbm).  Just make sure, that its width is a multiple of
+    32 and its height a multiple of 8.  A simple make will create
+    a version of AleTV with the new font.  Warning: a make clean
+    will erase font1.xbm.  The next make will recreate font.xbm from
+    vtxt.bdf.
+
+    AleVT has a built in page editor.  If you start it with -editor
+    you may press 'E' to invoke it.  For the usage you have to consult
+    the sources.  (It's very crude!)
+
+
+TODO: (no specific order)
+
+    - Error correction in alevt-cap
+    - Better language support.  Internal 16-bit charset.
+    - Separated graphics.
+    - Rewrite the whole stuff.  A networked teletext daemon and clients
+      that connect to it for display, capture, cgi, ...
+
+
+NEWER VERSIONS:
+
+    The primary site of AleVT is http://goron.de/~froese
+
+Have fun,
+Edgar Toernig (froese@gmx.de)

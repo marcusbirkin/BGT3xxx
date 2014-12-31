@@ -1,0 +1,25 @@
+#!/bin/sh
+
+scripts/bttv.pl ../linux/drivers/media/video/bt8xx/bttv.h  ../linux/drivers/media/video/bt8xx/bttv-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.bttv
+
+scripts/cx88.pl ../linux/drivers/media/video/cx88/cx88.h ../linux/drivers/media/video/cx88/cx88-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.cx88
+
+scripts/em28xx.pl ../linux/drivers/media/video/em28xx/em28xx-cards.c ../linux/drivers/media/video/em28xx/em28xx.h \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.em28xx
+
+scripts/tuner.pl ../linux/include/media/tuner.h ../linux/drivers/media/common/tuners/tuner-types.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.tuner
+
+scripts/saa7134.pl ../linux/drivers/media/video/saa7134/saa7134.h ../linux/drivers/media/video/saa7134/saa7134-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.saa7134
+
+scripts/usbvision.pl ../linux/drivers/media/video/usbvision/usbvision-cards.h ../linux/drivers/media/video/usbvision/usbvision-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.usbvision
+
+scripts/cx23885.pl ../linux/drivers/media/video/cx23885/cx23885.h ../linux/drivers/media/video/cx23885/cx23885-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.cx23885
+
+scripts/au0828.pl ../linux/drivers/media/video/au0828/au0828-cards.h ../linux/drivers/media/video/au0828/au0828-cards.c \
+	| perl -ne 's/[ \t]+$//; print' > ../linux/Documentation/video4linux/CARDLIST.au0828

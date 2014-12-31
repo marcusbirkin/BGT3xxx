@@ -1,0 +1,26 @@
+Requirements:
+
+For ttusb_dec_reset, you will need libusb.
+
+Building:
+
+Simply type
+$ make
+
+Build options
+  static=1          - Build all applications statically.
+  V=1               - Verbose output during build.
+  ttusb_dec_reset=1 - Build the optional ttusb_dec_reset.
+
+Installing:
+
+Install libraries and utils to /usr/[bin,include,lib,share]
+$ make install
+
+Install options
+  prefix=<...>     - basic installation dir [default: /usr]
+  bindir=<...>     - installation dir for applications [default: $(prefix)/bin]
+  includedir=<...> - installation dir for include files [default: $(prefix)/include]
+  libdir=<...>     - installation dir for applications [default: $(prefix)/lib]
+  sharedir=<...>   - installation dir for shared data [default: $(prefix)/share]
+  DESTDIR=<...>    - prefix for all files, useful for packaging

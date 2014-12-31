@@ -1,0 +1,63 @@
+Hi,
+
+this is a utility to setup IR control keymaps using the /proc/av7110_ir
+interface.
+
+just call
+
+   # ./av7110_loadkeys [-i|--invert] [-a|--address <num>] keymapname.(rc5|rcmm) > /proc/av7110_ir
+
+If your IR receiver hardware inverts the signal, you should use the -i
+or --invert command line option.
+
+If you have two or more devices which use the same IR protocol, you should
+specify the -a or --address parameter. If the parameter is omitted, the
+driver listens to all device addresses. Some examples:
+
+Listen to *any* IR transmitter with uses the RC5 protocol:
+# ./av7110_loadkeys hauppauge.rc5 > /proc/av7110_ir
+
+Listen to RC5 transmitter with address 2:
+# ./av7110_loadkeys -a 2 hauppauge.rc5 > /proc/av7110_ir
+
+If you don't know the correct value for the -a parameter, take a look
+on the debug output of the driver (see below).
+
+Now you can test your hardware setup using evtest
+
+   # ./evtest /dev/input/eventX
+
+where eventX is the IR input event device, usually event0 if you don't
+use USB mice or keyboards.
+
+------------------------------------------------------------------------
+
+Keymaps are in format:
+
+   <key> <associated input keycode>
+
+   0x00   KEY_0
+   0x01   KEY_1
+   0x42   KEY_HOME
+
+------------------------------------------------------------------------
+
+In order to write a new keymap you might want to see the raw key
+values in the kernel log. Use
+
+   # insmod dvb-ttpci.o av7110_ir_debug=1
+
+in order to enable some verbosity in the av7110_ir driver. Then watch
+the kernel log while pressing your remote control keys. When you don't see
+any messages in your kernel log you should check all electrical connections,
+the selected protocol (RC5 or RCMM?) and the inversion setting.
+
+You find a list of all linux input key identifiers in </usr/include/input.h>
+and "./input_fake.h".
+
+Please post new keymaps on the linux-dvb mailing list or send them to
+me <holger@convergence.de>.
+
+have fun!
+
+Holger

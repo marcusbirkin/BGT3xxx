@@ -1,0 +1,125 @@
+config DVB_FE_CUSTOMISE
+	bool "Customise the frontend modules to build"
+	depends on DVB_CORE
+	default N
+	help
+	  This allows the user to select/deselect frontend drivers for their
+	  hardware from the build.
+
+	  Use this option with care as deselecting frontends which are in fact
+	  necessary will result in DVB devices which cannot be tuned due to lack
+	  of driver support.
+
+	  If unsure say N.
+
+if DVB_FE_CUSTOMISE
+
+menu "Customise DVB Frontends"
+
+comment "Multistandard (satellite) frontends"
+	depends on DVB_CORE
+
+config DVB_STV090x
+	tristate "STV0900/STV0903(A/B) based"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  DVB-S/S2/DSS Multistandard Professional/Broadcast demodulators.
+	  Say Y when you want to support these frontends.
+
+config DVB_STV6110x
+	tristate "STV6110/(A) based tuners"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  A Silicon tuner that supports DVB-S and DVB-S2 modes
+
+config DVB_CXD2850
+	tristate "Sony CXD2850"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  Say Y when you want to support this frontend.
+
+comment "DVB-S (satellite) frontends"
+	depends on DVB_CORE
+
+comment "Multistandard frontends"
+	depends on DVB_CORE
+
+config DVB_TDA18272
+	tristate "NXP TDA18272 based"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  A silicon tuner module. Say Y when you want to support this tuner.
+
+config DVB_TDA10048
+	tristate "Philips TDA10048HN based"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  A DVB-T tuner module. Say Y when you want to support this frontend.
+
+config DVB_S5H1411
+	tristate "Samsung S5H1411 based"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  An ATSC 8VSB and QAM64/256 tuner module. Say Y when you want
+	  to support this frontend.
+
+comment "SEC control devices for DVB-S"
+	depends on DVB_CORE
+
+config DVB_LNBP21
+	tristate "LNBP21/LNBH24 SEC controllers"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  An SEC control chips.
+
+config DVB_A8290
+	tristate "Allegro A8290 SEC controller"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  A SEC controller.
+
+comment "Tools to develop new frontends"
+
+config DVB_DUMMY_FE
+	tristate "Dummy frontend driver"
+	default n
+
+config DVB_CXD2820R
+	tristate "Sony CXD2820R"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  Say Y when you want to support this frontend.
+
+config DVB_CXD2834
+	tristate "Sony CXD2834"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  Say Y when you want to support this frontend.
+
+config DVB_CXD2817
+	tristate "Sony CXD2817"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  Say Y when you want to support this frontend.
+
+config DVB_CXD2861
+	tristate "Sony CXD2861"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  Say Y when you want to support this tuner
+
+endmenu
+
+endif

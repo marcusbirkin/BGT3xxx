@@ -1,0 +1,20 @@
+This is a little channel scan utility to generate szap/tzap/czap/azap
+compatible channel lists. An atsc/dvbscan does not do a frequency scan, however,
+so you must manually provide the data for tuning to one or more start
+transponders. A number of initial-tuning-data files are provided for various
+dvb-c, dvb-s, dvb-t and atsc networks around the world. If you make a new one
+feel free to submit it to the linux-dvb mailing list
+http://www.linuxtv.org/lists.php.
+
+Basic usage: ./dvbscan dvb-s/Astra-19.2E | tee mychannels.conf
+or           ./atscscan atsc/us-NTSC-center-frequencies-8VSB
+
+If you want it to check a specific frequency, tune to that frequency
+(e.g. using szap/tzap/czap/azap) and then use './dvbscan -c' or './atscscan -c'.
+
+For more scan options see ./dvbscan -h or ./atscscan -h
+
+atscscan is _just_ a copy of dvbscan to not confuse ATSC-user.
+
+Good luck,
+Holger + Johannes + Patrick (beat me for ATSC)

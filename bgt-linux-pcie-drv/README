@@ -1,0 +1,17 @@
+V4L and DVB documentation are at:
+	linux/Docummentation directory.
+
+To compile both v4l and dvb, just do:
+	make
+
+To install over kernel's old files:
+	make install
+
+A more complete list of other possible usages for the building system
+can be found at:
+	INSTALL
+
+if you want to contribute by offering your work to V4L/DVB, please read:
+	README.patches
+
+Notice: v4l dir is used also as a temporary dir for building v4l/dvb modules.

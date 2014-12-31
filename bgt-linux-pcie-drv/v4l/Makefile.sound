@@ -1,0 +1,26 @@
+# From sound/pci/Makefile
+
+snd-bt87x-objs := bt87x.o
+obj-$(CONFIG_SND_BT87X) += snd-bt87x.o
+
+# From sound/i2c/other/Makefile
+snd-tea575x-tuner-objs := tea575x-tuner.o
+obj-$(CONFIG_SND_FM801_TEA575X) += snd-tea575x-tuner.o
+
+KDIRA          := /lib/modules/$(KERNELRELEASE)/kernel
+
+
+sound-install install-sound::
+	@dir="sound/pci"; \
+	files='snd-bt87x.ko'; \
+	echo -e "\nInstalling $(KDIRA)/$$dir files:"; \
+	install -d $(KDIRA)/$$dir; \
+	for i in $$files;do if [ -e $$i ]; then echo -n "$$i "; \
+	install -m 644 -c $$i $(KDIRA)/$$dir; fi; done; echo;
+
+	@dir="sound/i2c/other"; \
+	files='snd-tea575x-tuner.ko'; \
+	echo -e "\nInstalling $(KDIRA)/$$dir files:"; \
+	install -d $(KDIRA)/$$dir; \
+	for i in $$files;do if [ -e $$i ]; then echo -n "$$i "; \
+	install -m 644 -c $$i $(KDIRA)/$$dir; fi; done; echo;

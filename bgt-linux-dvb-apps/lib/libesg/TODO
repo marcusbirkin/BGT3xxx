@@ -1,0 +1,18 @@
+*** General
+- Add enums for constants
+
+*** EncodingVersion
+- GZIP : use zlib
+- BiM : ???
+
+*** BOOTSTRAP
+- ESGProviderDiscoveryDescriptor : XML parsing with libexpat ?
+
+*** TRANSPORT
+- Indexation
+
+*** ENCAPSULATION
+- Auxiliary Data
+
+*** REPRESENTATION
+- BiM Decoder Init

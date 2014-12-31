@@ -1,0 +1,47 @@
+# This Makefile is used to build sources that are part of the kernel tree.
+# What we want are the various programs used by the kconfig system.  We can't
+# just directly call the top-level kernel Makefile, as it doesn't provide
+# targets to only build the kconfig system.  It provides targets to build
+# the kconfig system *and then configure the kernel*.
+
+# What we do is include the top-level kernel Makefile here, to get all the
+# variables and rules it defines, and then add our own targets to just build
+# the kconfig system.  You can think of this file as a modified version of the
+# top-level kernel Makefile that has "kconfig build only" targets added to it.
+# Each of these new targets has the prefix v4l- so it doesn't conflict with
+# any targets in the kernel Makefile.
+
+# Like the kernel Makefile, this Makefile should have the cwd be the root
+# of the kernel source.
+
+# These should be defined on the command line, to override the kernel Makefile
+# config-targets := 1
+# mixed-targets := 0
+# dot-config := 0
+
+KBUILD_SRC := $(SRCDIR)
+include $(SRCDIR)/Makefile
+
+# Used by the config target
+v4l-conf: scripts_basic
+	$(MAKE) $(build)=scripts/kconfig scripts/kconfig/conf
+
+# Used by the xconfig target
+v4l-qconf: scripts_basic
+	$(MAKE) $(build)=scripts/kconfig qconf-target=1 scripts/kconfig/qconf
+
+# Used by the qconfig target
+v4l-gconf: scripts_basic
+	$(MAKE) $(build)=scripts/kconfig gconf-target=1 scripts/kconfig/gconf
+
+# Used by the menuconfig target, also needs lxdialog
+v4l-mconf: scripts_basic
+	$(MAKE) $(build)=scripts/kconfig hostprogs-y=mconf scripts/kconfig/mconf
+
+# Rule used for kernel where lxdialog is in directory scripts/lxdialog
+v4l-%/scripts/lxdialog/lxdialog: scripts_basic
+	$(MAKE) $(build)=scripts/lxdialog
+
+# Rule used for kernel where lxdialog is in directory scripts/kconfig/lxdialog
+v4l-%/scripts/kconfig/lxdialog/lxdialog: scripts_basic
+	$(MAKE) $(build)=scripts/kconfig/lxdialog

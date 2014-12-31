@@ -1,0 +1,12 @@
+Hi there,
+
+atsc_epg is a small utility for obtaining information such as programs, EPG 
+(electronic program guide) from an ATSC channel. 
+
+Pulling the detailed information, i.e., option '-t', may take fairly long 
+time, or never ending, which is a bug of the PSIP generator. Ctrl+C can be 
+used to abort and the received parts will be printed.
+
+Enjoy,
+Yufei
+

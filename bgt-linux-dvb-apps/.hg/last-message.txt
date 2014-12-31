@@ -1,0 +1,2 @@
+tzap: typo, works on type FE_OFDM devices, rather than FE_QAM
+

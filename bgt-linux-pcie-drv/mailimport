@@ -1,0 +1,304 @@
+#!/bin/bash
+# Copyright (c) 2006 Mauro Carvalho Chehab (mchehab@infradead.org)
+# This code is placed under the terms of the GNU General Public License
+#
+#This script is capable to mass import patches on a mbox file, test for it, allow
+#comment editing and applying it.
+#
+#This script requires:
+#1) git, since it uses gitimport to break a mbox into patches;
+#2) hg mailqueue. It is easier to manage patches using mq, allowing to work with
+#   the patches before applying to the tree.
+
+#uncomment to use mq
+#usemq=1
+
+#uncomment to stop at the first error while testing a patch with --dry-run
+#exitonerror=1
+
+head=v4l/scripts/hghead.pl
+
+edit_patch()
+{
+	next=$1
+
+	if [ "`grep 'has been added to the -mm tree.  Its filename is' $next`" != "" ]; then
+		newfile="$TMPDIR/next2_$$"
+
+		echo Processing -mm file $next
+
+		perl -e 'while (<>) { if (m/Date:/) { print $_; };
+			if (m/^------------------------------------------------------/) {
+				print <>; exit;
+			}}' $next >$newfile;
+		mv $tmp/$newfile $next;
+	fi
+	echo Editing $next
+	$ED $next
+}
+
+####################################################################
+# Tries to apply a patch at the tree
+
+apply_patch () {
+	next=$1
+
+	unset cont
+	until [ "$cont" == "0" ]; do
+		cont=1
+		pdir=linux
+		echo patch -s -t -p1 --dry-run -l -N -d $pdir -i $next
+		patch -s -t -p1 --dry-run -l -N -d $pdir -i $next
+		if [ "$?" != "0" ]; then
+			pdir=.
+			echo patch -s -t -p1 --dry-run -l -N -d $pdir -i $next
+			patch -s -t -p1 --dry-run -l -N -d $pdir -i $next
+		fi
+
+		if [ "$?" != "0" ]; then
+			echo "*** ERROR: Patch didn't applied well"
+			if [ "$exitonerror" != "" ]; then
+				$head $next
+				exit
+			fi
+			echo "** Edit file $next"
+			sleep 1
+			edit_patch $next
+		else
+			echo "Patch applied OK against $pdir"
+			cont=0
+		fi
+	done
+
+	edit_patch $next
+
+	unset cont
+	until [ "$cont" == "0" ]; do
+		cont=0
+		$head $next >$TMP2
+
+		if [ "`grep '^Bad:' $TMP2`" != "" ]; then
+			echo "*** ERROR: Patch bad formed. Please fix."
+			sleep 1
+			$ED $next
+			cont=1
+		fi
+	done
+
+	committer=`grep "Committer:" $TMP2|sed s/"#Committer: "//`
+	date=`grep "Date:" $TMP2|sed s/"#Date: "//|sed s/\(.*\)//`
+
+	if [ "$usemq" != "" ]; then
+		name=`cat $next | perl -ne '
+			if (s/Subject:\s+(.*)/$1/) {
+				m/\s*(.*)\s*\n/;
+				$_="$1";
+
+				tr/[A-Z]/[a-z]/;
+				s/[^a-z0-9]/_/g;
+				s/_+$//;
+				s/_+/_/g;
+				s/^v4l_dvb_\d+[a-z]*_//g;
+
+				printf "%s.patch",$_;
+				exit;
+			}'`
+
+		cat $next| grep -v "^#" >$TMPDIR/$name
+
+		echo hg -d "$date" -m "`cat $TMP2|grep -v "^#"`" qnew $name
+		hg qnew -d "$date" -m "`cat $TMP2|grep -v "^#"`" $name
+		make cardlist
+		make whitespace
+		hg qrefresh
+	else
+		echo "WILL commit with this comment:"
+		cat $TMP2| grep -v "^#"
+		echo "Press <break> within 3 seconds if this is wrong."
+		sleep 3
+
+		patch -s -t -p1 -l -N -d $pdir -i $next
+		if [ "$?" != "0" ]; then
+			echo "*** ERROR at: patch -s -t -p1 -l -N -d $pdir -i $next"
+			exit -1
+		fi
+		make cardlist
+		make whitespace
+
+		cur=`pwd`
+		cd $pdir
+		hg addremove `diffstat -p1 -l $next`
+		if [ "$?" != "0" ]; then
+			echo "*** ERROR at hg addremove"
+			echo hg addremove `diffstat -p1 -l $next`
+			patch -s -t -p1 -l -R -d $pdir -i $next
+			exit -1
+		fi
+
+		# Commit the changed files
+		CARDLIST="`hg status -n -m|grep CARDLIST.`"
+		FILES=""
+		for i in $CARDLIST; do
+			FILES="$FILES $cur/$i"
+		done
+		for i in `diffstat -p1 -l $next`; do
+			FILES="$FILES `pwd`/$i"
+		done
+
+		if [ "$FILES" == "" ]; then
+			echo "*** ERROR nothing to commit"
+			patch -s -t -p1 -l -R -d $pdir -i $next
+			cd $cur
+			exit -1
+		fi
+
+		hg commit -d "$date" -u "$committer" -m "`cat $TMP2|grep -v "^#"`" $FILES
+
+		if [ "$?" != "0" ]; then
+			echo "*** ERROR at hg commit"
+			echo hg commit -d \"$date\" -u \"$committer\" -m "<msg>" $FILES
+			patch -s -t -p1 -l -R -d $pdir -i $next
+			cd $cur
+			exit -1
+		fi
+		cd $cur
+	fi
+	hg log -r -1 -v
+}
+
+####################################################################
+# Proccess a new patch
+
+proccess_patch ()
+{
+	i="$_"
+
+	CHECK="`cat $i| perl -ne 'if (m/^Subject:.*FOLDER INTERNAL DATA/) { print -1; }'`"
+
+	if [ "$CHECK" != "" ]; then
+		return
+	fi
+
+	echo $i
+	if [ "`diffstat -p1 -l "$i"`" == "" ]; then
+		echo "*** ERROR nothing to commit"
+		cd $cur
+		exit
+	fi
+
+	cat $i| git mailinfo $DIR/msg $DIR/patch >$DIR/author
+	cat $DIR/msg|grep -vi ^CC: >$DIR/msg2
+
+	cat $DIR/author|perl -ne "if (m/Author[:]\\s*(.*)\\n/) { \$auth=\$1; } else \
+		{ if (m/Email[:]\\s*(.*)\\n/) { print \"From: \$auth \<\$1\>\n\"; } else \
+		{ if (m/Subject[:]\\s*(.*)\\n/) { \
+		\$sub=\$1; \
+		\$sub=~ s;^(media|dvb|v4l|video|drivers|[-_/: \\t])*(.*);\$2;; \
+		print \"Subject: \$sub\\n\"; \
+		} else  \
+		{ print; } } \
+		}" >$DIR/author2
+
+	out=$DIR/patch.diff
+
+	cat $DIR/author2
+
+	sob="Signed-off-by: $CHANGE_LOG_NAME <$CHANGE_LOG_EMAIL_ADDRESS>"
+
+	if [ "$(perl -ne 'if (m/$sob/) { print $_; }' $DIR/msg2)" == "" ]; then
+		echo $sob >>$DIR/msg2
+	fi
+
+	echo "cat $DIR/author2 $DIR/msg2 $DIR/patch >$out"
+	$CHECKPATCH -q --notree $i|perl -ne '{ print "# $_"; }' >$out
+	cat $DIR/author2 $DIR/msg2 $DIR/patch >>$out
+
+	apply_patch $out
+}
+
+####################################################################
+# Main
+
+if [ "$1" == "" ]; then
+	echo "Usage: $0 <mbox>"
+	exit
+fi
+
+if [ "$TMPDIR" == "" ]; then
+	TMPDIR=/tmp
+fi
+
+if [ "`which editdiff`"  != "" ]; then
+	ED="editdiff"
+else
+	ED=$EDITOR
+fi
+
+if [ "$ED" == "" ]; then
+	if [ "`which nano`" != "" ]; then
+		ED="nano -w"
+	elif [ "`which pico`" != "" ]; then
+		ED="pico -w"
+	else
+		ED="vi"
+	fi
+fi
+
+if [ "$CHECKPATCH" == "" ]; then
+	CHECKPATCH="/lib/modules/`uname -r`/build/scripts/checkpatch.pl"
+fi
+
+NAME="$1"
+
+if [ ! -r $NAME ]; then
+	sudo chmod -R og+r $NAME
+fi
+
+DIR="$TMPDIR/mailimport$$"
+mkdir $DIR
+if [ "$?" != "0" ]; then
+	echo "*** Error at mkdir $DIR"
+	exit -1;
+fi
+trap "rm -rf $DIR" EXIT
+
+if [ -d "$NAME" ]; then
+	TMP2="$DIR/patchheader"
+
+	if [ -e "$NAME/series" ]; then
+		echo "Processing quilt tree $NAME"
+		for i in `cat "$NAME/series"|grep -v "^#"`; do
+			echo "$NAME/$i"
+			proccess_patch "$NAME/$i"
+		done
+	else
+		echo "Processing patches from tree $NAME"
+		for i in $NAME/*; do
+			if [ ! -r $i ]; then
+				sudo chmod og+r $i
+			fi
+
+			echo "$i"
+			proccess_patch "$i"
+		done
+	fi
+else
+	TMP2=$DIR/patchheader
+
+	grep -v -f - $NAME >$DIR/tmpbox <<EOF
+^Content-Type:
+^--Boundary-
+^Content-Disposition: inline
+^Content-Transfer-Encoding: 8bit
+EOF
+
+	echo git mailsplit -b $DIR/tmpbox $DIR
+	echo -n "Number of patches at file: "
+	git mailsplit -b $DIR/tmpbox $DIR
+	echo
+
+	for i in $DIR/0*; do
+		echo $i
+		proccess_patch $i
+	done
+fi

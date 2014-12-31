@@ -1,0 +1,72 @@
+Hi,
+
+this software is not just a program, it's moreover a legend.
+It is THE protagonist of all videotext applications under Linux.
+
+During the past 10 years the video standards, the APIs, the kernel
+have seen lots of changes.
+But unfortunately this program has NOT seen much maintenance.
+The results of that misfit appearance are:
+
+1. lots of forks flying around in the Internet
+2. lots of patches flying around, some good, some disgusting, some out of time
+3. lots of cruft which is completely outdated or obsolete for other reasons
+
+To handle all that in one big effort I decided to redesign the program
+completely, enlarging its capabilities for DVB-S at the same time.
+
+So here are the changes:
+
+1. Erasure of old help pages and rename / reorganize / update the rest
+-> redesign of the online help system / implying alevt-date and alevt-cap
+
+2. Erasure of old outdated integers, functions, parameters:
+
+- bell, big_buf, debug, display, editor, erc, fine_tune, newbttv,
+- oldbttv
+
+3. Coding style cleanups (no superfluous comments, not more than
+   80 characters per column, no uncommented code.
+
+4. No strange characters in the outfile, latin alphabet in purity instead.
+
+5. Alevt can be started in 4 modes now if you are running it in DVB mode:
+
+- by service id (sid)
+- by teletext pid (ttpid)
+- by channel name
+- without parameter
+
+6. Starting it in DVB mode on the command line it presents you
+a table with human readable values such as sid, teletext pid,
+PMT (Program Map Table), provider name, service name, language, service type.
+This makes it easier for you to start multiple teletext windows
+in multiple console sessions manually.
+
+If working with a script and the option -o (outfile) you can
+also start multiple teletext windows of all channels in a transponder.
+I develop a GUI using TCL / TK 8.5 and Iwidgets 4.01 to do that and other
+tasks graphically (i. e. by mouse click).
+
+7. If you install the program on the command line by typing "make &
+   make install" there is an uninstaller now to revert the installation:
+   "make uninstall".
+
+ENJOY IT!
+
+Uwe Bugla, February 11th, 2010.
+
+External dependencies
+
+AleVT needs some system libraries to be installed in your system.
+They are zlib, libX11, libpng and libzvbi.
+
+Credits go to:
+- Andreas Rottmann from debian.org for compiler fixes and
+  other kinds of investigation.
+- Francesco Lavra for supplying a kernel patch to avoid kernel demux
+  incompatibilities with kernels >= 2.6.32
+- Andy Walls for helpful investigation in kernelspace
+- Edgar Toernig for providing the source version 1.6.2 and doing all the
+  development for the basic versions
+- Tom Zoerner for the implementation of libzvbi
