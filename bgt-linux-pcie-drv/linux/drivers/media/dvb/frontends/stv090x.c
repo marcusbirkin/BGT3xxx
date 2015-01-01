@@ -5105,7 +5105,7 @@ err:
 static int stv090x_set_tspath(struct stv090x_state *state)
 {
 	u32 reg;
-	u8 speed;
+	//u8 speed;
 
 	if (state->internal->dev_ver >= 0x20) {
 		switch (state->config->ts1_mode) {
