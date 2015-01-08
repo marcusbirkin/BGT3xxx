@@ -464,11 +464,15 @@ static inline int snd_card_create(int idx, const char *id,
 			      struct module *module, int extra_size,
 			      struct snd_card **card)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
+	return snd_card_new(NULL, idx, id, module, extra_size, card);
+#else
 	*card = snd_card_new(idx, id, module, extra_size);
 
 	if (*card == NULL)
 		return -ENOMEM;
 	return 0;
+#endif
 }
 #endif
 
