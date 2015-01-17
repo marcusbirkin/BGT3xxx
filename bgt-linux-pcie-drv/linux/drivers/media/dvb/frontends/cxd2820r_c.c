@@ -45,6 +45,7 @@ int cxd2820r_set_frontend_c(struct dvb_frontend *fe)
 		{ 0x1008b, 0x07, 0xff },
 		{ 0x1001f, priv->cfg.if_agc_polarity << 7, 0x80 },
 		{ 0x10070, priv->cfg.ts_mode, 0xff },
+		{ 0x10071, !priv->cfg.ts_clock_inv << 4, 0x10 },
 	};
 
 	dev_dbg(&priv->i2c->dev, "%s: frequency=%d symbol_rate=%d\n", __func__,
@@ -64,7 +65,7 @@ int cxd2820r_set_frontend_c(struct dvb_frontend *fe)
 	}
 
 	priv->delivery_system = SYS_DVBC_ANNEX_A;
-	priv->ber_running = 0; /* tune stops BER counter */
+	priv->ber_running = false; /* tune stops BER counter */
 
 	/* program IF frequency */
 	if (fe->ops.tuner_ops.get_if_frequency) {
@@ -78,7 +79,7 @@ int cxd2820r_set_frontend_c(struct dvb_frontend *fe)
 
 	num = if_freq / 1000; /* Hz => kHz */
 	num *= 0x4000;
-	if_ctl = cxd2820r_div_u64_round_closest(num, 41000);
+	if_ctl = 0x4000 - cxd2820r_div_u64_round_closest(num, 41000);
 	buf[0] = (if_ctl >> 8) & 0x3f;
 	buf[1] = (if_ctl >> 0) & 0xff;
 
@@ -167,7 +168,7 @@ int cxd2820r_read_ber_c(struct dvb_frontend *fe, u32 *ber)
 			start_ber = 1;
 		}
 	} else {
-		priv->ber_running = 1;
+		priv->ber_running = true;
 		start_ber = 1;
 	}
 
@@ -265,19 +266,17 @@ int cxd2820r_read_status_c(struct dvb_frontend *fe, fe_status_t *status)
 	u8 buf[2];
 	*status = 0;
 
-	ret = cxd2820r_rd_reg(priv, 0x10088, &buf[0]);
-	if (ret)
-		goto error;
-
-	ret = cxd2820r_rd_reg(priv, 0x10073, &buf[1]);
+	ret = cxd2820r_rd_regs(priv, 0x10088, buf, sizeof(buf));
 	if (ret)
 		goto error;
 
 	if (((buf[0] >> 0) & 0x01) == 1) {
-		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER | FE_HAS_VITERBI | FE_HAS_SYNC;
+		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER |
+			FE_HAS_VITERBI | FE_HAS_SYNC;
 
 		if (((buf[1] >> 3) & 0x01) == 1) {
-			*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER | FE_HAS_VITERBI | FE_HAS_SYNC | FE_HAS_LOCK;
+			*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER |
+				FE_HAS_VITERBI | FE_HAS_SYNC | FE_HAS_LOCK;
 		}
 	}
 

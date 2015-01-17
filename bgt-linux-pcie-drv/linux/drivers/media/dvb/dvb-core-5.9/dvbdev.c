@@ -74,22 +74,15 @@ static int dvb_device_open(struct inode *inode, struct file *file)
 
 	if (dvbdev && dvbdev->fops) {
 		int err = 0;
-		const struct file_operations *old_fops;
+		const struct file_operations *new_fops;
 
-		file->private_data = dvbdev;
-		old_fops = file->f_op;
-		file->f_op = fops_get(dvbdev->fops);
-		if (file->f_op == NULL) {
-			file->f_op = old_fops;
+		new_fops = fops_get(dvbdev->fops);
+		if (!new_fops)
 			goto fail;
-		}
-		if(file->f_op->open)
+		file->private_data = dvbdev;
+		replace_fops(file, new_fops);
+		if (file->f_op->open)
 			err = file->f_op->open(inode,file);
-		if (err) {
-			fops_put(file->f_op);
-			file->f_op = fops_get(old_fops);
-		}
-		fops_put(old_fops);
 		up_read(&minor_rwsem);
 		mutex_unlock(&dvbdev_mutex);
 		return err;
@@ -418,10 +411,8 @@ int dvb_usercopy(struct file *file,
 	}
 
 	/* call driver */
-	mutex_lock(&dvbdev_mutex);
 	if ((err = func(file, cmd, parg)) == -ENOIOCTLCMD)
 		err = -ENOTTY;
-	mutex_unlock(&dvbdev_mutex);
 
 	if (err < 0)
 		goto out;
@@ -464,6 +455,7 @@ static int __init init_dvbdev(void)
 {
 	int retval;
 	dev_t dev = MKDEV(DVB_MAJOR, 0);
+	printk(KERN_ERR "WARNING: You are using an experimental version of the media stack.\n\tAs the driver is backported to an older kernel, it doesn't offer\n\tenough quality for its usage in production.\n\tUse it with care.\nLatest git patches (needed if you report a bug to linux-media@vger.kernel.org):\n\t99f3cd52aee21091ce62442285a68873e3be833f [media] vb2-vmalloc: Protect DMA-specific code by #ifdef CONFIG_HAS_DMA\n\t983c5bd26b86ba1c0d79b770e596bb8b77e42f32 [media] rc-main: Re-apply filter for no-op protocol change\n\t40b8a5a65aa3ba51a80f7bd667df8403d54d6e7a [media] staging: media: lirc: lirc_zilog.c: missing newline in dev_err()\n");
 
 	if ((retval = register_chrdev_region(dev, MAX_DVB_MINORS, "DVB")) != 0) {
 		printk(KERN_ERR "dvb-core: unable to get major %d\n", DVB_MAJOR);

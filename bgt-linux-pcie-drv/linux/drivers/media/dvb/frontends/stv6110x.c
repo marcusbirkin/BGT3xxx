@@ -32,6 +32,9 @@
 #include "stv6110x.h"
 #include "stv6110x_priv.h"
 
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
 static unsigned int verbose;
 module_param(verbose, int, 0644);
 MODULE_PARM_DESC(verbose, "Set Verbosity level");
@@ -61,13 +64,21 @@ static int stv6110x_write_regs(struct stv6110x_state *stv6110x, int start, u8 da
 {
 	int ret;
 	const struct stv6110x_config *config = stv6110x->config;
-	u8 buf[len + 1];
+	u8 buf[MAX_XFER_SIZE];
+
 	struct i2c_msg msg = {
 		.addr = config->addr,
 		.flags = 0,
 		.buf = buf,
 		.len = len + 1
 	};
+
+	if (1 + len > sizeof(buf)) {
+		printk(KERN_WARNING
+		       "%s: i2c wr: len=%d is too big!\n",
+		       KBUILD_MODNAME, len);
+		return -EINVAL;
+	}
 
 	if (start + len > 8)
 		return -EINVAL;
@@ -323,71 +334,6 @@ static int stv6110x_get_status(struct dvb_frontend *fe, u32 *status)
 	return 0;
 }
 
-#if 0
-static int stv6110x_get_state(struct dvb_frontend *fe,
-			      enum tuner_param param,
-			      struct tuner_state *state)
-{
-	switch (param) {
-	case DVBFE_TUNER_FREQUENCY:
-		stv6110x_get_frequency(fe, &state->frequency);
-		break;
-
-	case DVBFE_TUNER_TUNERSTEP:
-		break;
-
-	case DVBFE_TUNER_IFFREQ:
-		break;
-
-	case DVBFE_TUNER_BANDWIDTH:
-		stv6110x_get_bandwidth(fe, &state->bandwidth);
-		break;
-
-	case DVBFE_TUNER_REFCLOCK:
-		break;
-
-	default:
-		break;
-	}
-
-	return 0;
-}
-
-static int stv6110x_set_state(struct dvb_frontend *fe,
-			      enum tuner_param param,
-			      struct tuner_state *tstate)
-{
-	struct stv6110x_state *stv6110x = fe->tuner_priv;
-
-	switch (param) {
-	case DVBFE_TUNER_FREQUENCY:
-		stv6110x_set_frequency(fe, stv6110x->frequency);
-		tstate->frequency = stv6110x->frequency;
-		break;
-
-	case DVBFE_TUNER_TUNERSTEP:
-		break;
-
-	case DVBFE_TUNER_IFFREQ:
-		break;
-
-	case DVBFE_TUNER_BANDWIDTH:
-		stv6110x_set_bandwidth(fe, stv6110x->bandwidth);
-		tstate->bandwidth = stv6110x->bandwidth;
-		break;
-
-	case DVBFE_TUNER_REFCLOCK:
-		stv6110x_set_refclock(fe, stv6110x->reference);
-		tstate->refclock = stv6110x->reference;
-		break;
-
-	default:
-		break;
-	}
-
-	return 0;
-}
-#endif
 
 static int stv6110x_release(struct dvb_frontend *fe)
 {
@@ -406,14 +352,6 @@ static struct dvb_tuner_ops stv6110x_ops = {
 		.frequency_max	= 2150000,
 		.frequency_step	= 0,
 	},
-#if 0
-	.init			= stv6110x_init,
-	.sleep          	= stv6110x_sleep,
-
-	.get_status		= stv6110x_get_status,
-	.get_state		= stv6110x_get_state,
-	.set_state		= stv6110x_set_state,
-#endif
 	.release		= stv6110x_release
 };
 

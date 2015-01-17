@@ -30,7 +30,6 @@
 
 #include "demux.h"
 
-
 #define DMX_TYPE_TS  0
 #define DMX_TYPE_SEC 1
 #define DMX_TYPE_PES 2

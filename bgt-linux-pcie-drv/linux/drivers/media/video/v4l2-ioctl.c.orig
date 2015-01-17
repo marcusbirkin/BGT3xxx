@@ -1012,7 +1012,7 @@ static int v4l_querycap(const struct v4l2_ioctl_ops *ops,
 	struct v4l2_capability *cap = (struct v4l2_capability *)arg;
 	int ret;
 
-	cap->version = V4L2_VERSION;
+	cap->version = LINUX_VERSION_CODE;
 
 	ret = ops->vidioc_querycap(file, fh, cap);
 
