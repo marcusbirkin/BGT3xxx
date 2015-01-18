@@ -13,7 +13,7 @@ STANDARD INSTALL
 DKMS INSTALL (Auto recompile on kernel update)
 ==============================================
 cd /usr/src  
-sudo git clone -b dkms https://github.com/marcusbirkin/BGT3xxx.git  
+sudo git clone https://github.com/marcusbirkin/BGT3xxx.git  
 sudo cp BGT3xxx/bgt-linux-pcie-fw/dvb-fe-tda10048-1.0.fw /lib/firmware/  
 sudo ln -s  BGT3xxx/bgt-linux-pcie-drv/ BGT3xxx-1.0.0.0Fixed  
 sudo dkms add -m BGT3xxx -v 1.0.0.0Fixed  
