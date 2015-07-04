@@ -590,8 +590,7 @@ static void cxd2820r_release(struct dvb_frontend *fe)
 #ifdef CONFIG_GPIOLIB
 	/* remove GPIOs */
 	if (priv->gpio_chip.label) {
-		int ret = gpiochip_remove(&priv->gpio_chip);
-		(void)ret;
+		(void)gpiochip_remove(&priv->gpio_chip);
 	}
 
 #endif
