@@ -293,7 +293,11 @@ static int cxd2820r_set_frontend(struct dvb_frontend *fe)
 err:
 	return ret;
 }
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int cxd2820r_read_status(struct dvb_frontend *fe, enum fe_status *status)
+#else
 static int cxd2820r_read_status(struct dvb_frontend *fe, fe_status_t *status)
+#endif
 {
 	struct cxd2820r_priv *priv = fe->demodulator_priv;
 	int ret;
@@ -507,7 +511,11 @@ static enum dvbfe_search cxd2820r_search(struct dvb_frontend *fe)
 	struct cxd2820r_priv *priv = fe->demodulator_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	int ret, i;
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+	enum fe_status status = 0;
+	#else
 	fe_status_t status = 0;
+	#endif
 
 	dev_dbg(&priv->i2c->dev, "%s: delsys=%d\n", __func__,
 			fe->dtv_property_cache.delivery_system);

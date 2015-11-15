@@ -1426,7 +1426,11 @@ out:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int cxd2850_send_diseqc_burst(struct dvb_frontend *fe, enum fe_sec_mini_cmd burst)
+#else
 static int cxd2850_send_diseqc_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t burst)
+#endif
 {
 	struct cxd2850_dev *cxd2850 = fe->demodulator_priv;
 	int ret;
@@ -1449,7 +1453,11 @@ out:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int cxd2850_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+#else
 static int cxd2850_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+#endif
 {
 	struct cxd2850_dev *cxd2850 = fe->demodulator_priv;
 	int ret;

@@ -4544,7 +4544,11 @@ static int stv090x_read_cnr(struct dvb_frontend *fe, u16 *cnr)
 	return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int stv090x_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+#else
 static int stv090x_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+#endif
 {
 	struct stv090x_state *state = fe->demodulator_priv;
 	u32 reg;
@@ -4634,7 +4638,11 @@ err:
 	return -1;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int stv090x_send_diseqc_burst(struct dvb_frontend *fe, enum fe_sec_mini_cmd burst)
+#else
 static int stv090x_send_diseqc_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t burst)
+#endif
 {
 	struct stv090x_state *state = fe->demodulator_priv;
 	u32 reg, idle = 0, fifo_full = 1;

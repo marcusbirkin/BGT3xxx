@@ -133,7 +133,11 @@ err:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int a8290_set_voltage(struct dvb_frontend* fe, enum fe_sec_voltage voltage)
+#else
 static int a8290_set_voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
+#endif
 {
 	struct a8290_state *a8290 = fe->sec_priv;
 	u8 data;
@@ -174,7 +178,11 @@ err:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int a8290_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+#else
 static int a8290_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+#endif
 {
 	struct a8290_state *a8290 = fe->sec_priv;
 	const struct a8290_config *config = a8290->config;

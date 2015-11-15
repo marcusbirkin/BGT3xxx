@@ -47,8 +47,12 @@ struct cxd2820r_priv {
 #ifdef CONFIG_GPIOLIB
 	struct gpio_chip gpio_chip;
 #endif
-
+	
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+	enum fe_delivery_system delivery_system;
+	#else
 	fe_delivery_system_t delivery_system;
+	#endif
 	bool last_tune_failed; /* for switch between T and T2 tune */
 };
 
@@ -82,7 +86,11 @@ int cxd2820r_get_frontend_c(struct dvb_frontend *fe);
 
 int cxd2820r_set_frontend_c(struct dvb_frontend *fe);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+int cxd2820r_read_status_c(struct dvb_frontend *fe, enum fe_status *status);
+#else
 int cxd2820r_read_status_c(struct dvb_frontend *fe, fe_status_t *status);
+#endif
 
 int cxd2820r_read_ber_c(struct dvb_frontend *fe, u32 *ber);
 
@@ -105,7 +113,11 @@ int cxd2820r_get_frontend_t(struct dvb_frontend *fe);
 
 int cxd2820r_set_frontend_t(struct dvb_frontend *fe);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+int cxd2820r_read_status_t(struct dvb_frontend *fe, enum fe_status *status);
+#else
 int cxd2820r_read_status_t(struct dvb_frontend *fe, fe_status_t *status);
+#endif
 
 int cxd2820r_read_ber_t(struct dvb_frontend *fe, u32 *ber);
 
@@ -128,7 +140,11 @@ int cxd2820r_get_frontend_t2(struct dvb_frontend *fe);
 
 int cxd2820r_set_frontend_t2(struct dvb_frontend *fe);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+int cxd2820r_read_status_t2(struct dvb_frontend *fe, enum fe_status *status);
+#else
 int cxd2820r_read_status_t2(struct dvb_frontend *fe, fe_status_t *status);
+#endif
 
 int cxd2820r_read_ber_t2(struct dvb_frontend *fe, u32 *ber);
 
