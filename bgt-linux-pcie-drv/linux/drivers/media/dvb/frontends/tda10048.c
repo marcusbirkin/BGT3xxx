@@ -791,8 +791,11 @@ static int tda10048_init(struct dvb_frontend *fe)
 
 	return ret;
 }
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int tda10048_read_status(struct dvb_frontend *fe, enum fe_status *status)
+#else
 static int tda10048_read_status(struct dvb_frontend *fe, fe_status_t *status)
+#endif
 {
 	struct tda10048_state *state = fe->demodulator_priv;
 	u8 reg;

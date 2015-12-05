@@ -32,6 +32,8 @@
 #include "saa7231_priv.h"
 #include "saa7231_dmabuf.h"
 
+#include <linux/vmalloc.h>
+
 
 static int saa7231_allocate_ptable(struct saa7231_dmabuf *dmabuf)
 {

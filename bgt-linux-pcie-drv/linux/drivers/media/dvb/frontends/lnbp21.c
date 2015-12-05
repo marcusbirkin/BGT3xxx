@@ -45,7 +45,11 @@ struct lnbp21 {
 };
 
 static int lnbp21_set_voltage(struct dvb_frontend *fe,
+					#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+					enum fe_sec_voltage voltage)
+					#else
 					fe_sec_voltage_t voltage)
+					#endif
 {
 	struct lnbp21 *lnbp21 = (struct lnbp21 *) fe->sec_priv;
 	struct i2c_msg msg = {	.addr = lnbp21->i2c_addr, .flags = 0,

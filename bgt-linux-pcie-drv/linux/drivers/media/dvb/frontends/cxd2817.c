@@ -811,7 +811,11 @@ static int cxd2817_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 	return cxd2817_wr_mask(cxd2817, 0xdb, enable ? 1 : 0, 0x1);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int cxd2817_read_status(struct dvb_frontend *fe, enum fe_status *status)
+#else
 static int cxd2817_read_status(struct dvb_frontend *fe, fe_status_t *status)
+#endif
 {
 	struct cxd2817_dev * cxd2817 = fe->demodulator_priv;
 	int ret;
@@ -1207,7 +1211,11 @@ static enum dvbfe_search cxd2817_search(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *props	= &fe->dtv_property_cache;
 	enum cxd2817_delsys delsys;
 	int ret = 0, i;
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+	enum fe_status status = 0;
+	#else
 	fe_status_t status = 0;
+	#endif
 	s32 offst;
 	u32 step;
 

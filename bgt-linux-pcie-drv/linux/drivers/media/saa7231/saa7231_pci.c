@@ -18,6 +18,8 @@
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #include <asm/io.h>
+#include <asm/atomic.h>
+#include <linux/spinlock_types.h>
 #include <asm/pgtable.h>
 #include <asm/page.h>
 #include <linux/module.h>

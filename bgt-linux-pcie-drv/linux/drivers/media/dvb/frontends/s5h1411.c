@@ -36,8 +36,11 @@ struct s5h1411_state {
 	const struct s5h1411_config *config;
 
 	struct dvb_frontend frontend;
-
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+	enum fe_modulation current_modulation;
+	#else
 	fe_modulation_t current_modulation;
+	#endif
 	unsigned int first_tune:1;
 
 	u32 current_frequency;
@@ -484,7 +487,11 @@ static int s5h1411_set_serialmode(struct dvb_frontend *fe, int serial)
 }
 
 static int s5h1411_enable_modulation(struct dvb_frontend *fe,
+				     #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+				     enum fe_modulation m)
+				     #else
 				     fe_modulation_t m)
+				     #endif
 {
 	struct s5h1411_state *state = fe->demodulator_priv;
 
@@ -659,7 +666,11 @@ static int s5h1411_init(struct dvb_frontend *fe)
 	return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int s5h1411_read_status(struct dvb_frontend *fe, enum fe_status *status)
+#else
 static int s5h1411_read_status(struct dvb_frontend *fe, fe_status_t *status)
+#endif
 {
 	struct s5h1411_state *state = fe->demodulator_priv;
 	u16 reg;

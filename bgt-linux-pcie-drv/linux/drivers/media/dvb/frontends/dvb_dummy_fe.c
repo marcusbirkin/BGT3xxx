@@ -33,7 +33,11 @@ struct dvb_dummy_fe_state {
 };
 
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int dvb_dummy_fe_read_status(struct dvb_frontend* fe, enum fe_status* status)
+#else
 static int dvb_dummy_fe_read_status(struct dvb_frontend* fe, fe_status_t* status)
+#endif
 {
 	*status = FE_HAS_SIGNAL
 		| FE_HAS_CARRIER
@@ -97,12 +101,20 @@ static int dvb_dummy_fe_init(struct dvb_frontend* fe)
 	return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int dvb_dummy_fe_set_tone(struct dvb_frontend* fe, enum fe_sec_tone_mode tone)
+#else
 static int dvb_dummy_fe_set_tone(struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
+#endif
 {
 	return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+static int dvb_dummy_fe_set_voltage(struct dvb_frontend* fe, enum fe_sec_voltage voltage)
+#else
 static int dvb_dummy_fe_set_voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
+#endif
 {
 	return 0;
 }
