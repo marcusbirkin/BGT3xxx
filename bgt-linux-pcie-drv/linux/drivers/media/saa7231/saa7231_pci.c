@@ -20,7 +20,9 @@
 #include <asm/io.h>
 #include <asm/atomic.h>
 #include <linux/spinlock_types.h>
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 4, 0)
 #include <asm/pgtable.h>
+#endif
 #include <asm/page.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
