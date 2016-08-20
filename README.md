@@ -9,8 +9,10 @@ Last updated for kernels up to v4.2
 
 STANDARD INSTALL
 ================
-./build.sh  
-
+cd /usr/src  
+sudo git clone https://github.com/marcusbirkin/BGT3xxx.git  
+sudo ./build.sh  
+sudo reboot
 
 DKMS INSTALL (Auto recompile on kernel update)
 ==============================================
@@ -21,4 +23,4 @@ sudo ln -s  BGT3xxx/bgt-linux-pcie-drv/ BGT3xxx-1.0.0.0Fixed
 sudo dkms add -m BGT3xxx -v 1.0.0.0Fixed  
 sudo dkms build -m BGT3xxx -v 1.0.0.0Fixed  
 sudo dkms install -m BGT3xxx -v 1.0.0.0Fixed  
-sudo modprobe saa7231_core  
+sudo reboot
