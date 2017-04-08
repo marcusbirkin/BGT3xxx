@@ -518,6 +518,7 @@ static struct cxd2861_cfg bgt3636_cxd2861_config = {
 #define BLACKGOLD_BGT3596		0x3596
 #define BLACKGOLD_BGT3595		0x3595
 #define BLACKGOLD_BGT3600		0x3600
+#define BLACKGOLD_BGT3602		0x3602
 #define BLACKGOLD_BGT3620		0x3620
 #define BLACKGOLD_BGT3630		0x3630
 #define BLACKGOLD_BGT3650		0x3650
@@ -537,25 +538,28 @@ static struct cxd2861_cfg bgt3636_cxd2861_config = {
 	.type		= (__type),			\
 }
 
-#define PURUS_PCIE			0
-#define PURUS_MPCIE			1
-#define PURUS_PCI			2
+enum {
+	PURUS_PCIE = 0,
+	PURUS_MPCIE,
+	PURUS_PCI,
 
-#define BGT3595				3
-#define BGT3596				4
-#define BGT3585				5
-#define BGT3576				6
-#define BGT3575				7
-#define BGT3600				8
-#define BGT3620				9
-#define BGT3630			       10
-#define BGT3650			       11
-#define BGT3651			       12
-#define BGT3660			       13
-#define BGT3685			       14
-#define BGT3695			       15
-#define BGT3696			       16
-#define BGT3636			       17
+	BGT3595,
+	BGT3596,
+	BGT3585,
+	BGT3576,
+	BGT3575,
+	BGT3600,
+	BGT3602,
+	BGT3620,
+	BGT3630,
+	BGT3650,
+	BGT3651,
+	BGT3660,
+	BGT3685,
+	BGT3695,
+	BGT3696,
+	BGT3636
+};
 
 static struct card_desc saa7231_desc[] = {
 	MAKE_DESC(NXP,		"Purus PCIe",	"DVB-S + DVB-T + Analog Ref. design"),
@@ -568,6 +572,7 @@ static struct card_desc saa7231_desc[] = {
 	MAKE_DESC(BLACKGOLD,	"BGT3576", 	"DVB-S/S2 + ATSC"),
 	MAKE_DESC(BLACKGOLD,	"BGT3575", 	"DVB-S/S2 + DVB-T/H"),
 	MAKE_DESC(BLACKGOLD,	"BGT3600",	"DVB-T/T2 + Analog"),
+	MAKE_DESC(BLACKGOLD,	"BGT3602",	"Dual DVB-T/T2/C + Analog"),
 	MAKE_DESC(BLACKGOLD,	"BGT3620",	"Dual DVB-T/T2/C + Analog"),
 	MAKE_DESC(BLACKGOLD,	"BGT3630",	"DVB-T/T2 + DVB-S/S2 + Analog"),
 	MAKE_DESC(BLACKGOLD,	"BGT3650",	"Dual DVB-T/T2 + Analog"),
@@ -627,6 +632,11 @@ static int saa7231_frontend_enable(struct saa7231_dev *saa7231)
 	case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3600):
 		GPIO_SET_OUT(GPIO_1);
 		if (saa7231_gpio_reset(saa7231, GPIO_1, 50) < 0)
+			ret = -EIO;
+		break;
+	case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3602):
+		GPIO_SET_OUT(GPIO_2);
+		if (saa7231_gpio_reset(saa7231, GPIO_2, 50) < 0)
 			ret = -EIO;
 		break;
 	case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3620):
@@ -824,6 +834,43 @@ static int saa7231_frontend_attach(struct saa7231_dvb *dvb, int frontend)
 					   bgt3620_tda18272_config);
 			}
 		}
+		ret = 0;
+		break;
+	case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3602):
+#if 1
+		dvb->fe = dvb_attach(cxd2820r_attach,
+				     &bgt3620_cxd2820r_config,
+				     &saa7231->i2c[1 + frontend].i2c_adapter,
+				     NULL);
+
+		if (!dvb->fe) {
+			dprintk(SAA7231_ERROR, 1, "Frontend:%d attach failed", frontend);
+			ret = -ENODEV;
+			goto exit;
+		} else {
+			dvb_attach(tda18272_attach,
+				   dvb->fe,
+				   &saa7231->i2c[1 + frontend].i2c_adapter,
+				   &bgt3620_tda18272_config[frontend]);
+		}
+#endif
+#if 0
+		dvb->fe = dvb_attach(cxd2834_attach,
+				     NULL,
+				     &saa7231->i2c[1 + frontend].i2c_adapter,
+				     &bgt3620_cxd2834_config);
+
+		if (!dvb->fe) {
+			dprintk(SAA7231_ERROR, 1, "Frontend:%d attach failed", frontend);
+			ret = -ENODEV;
+			goto exit;
+		} else {
+			dvb_attach(tda18272_attach,
+				   dvb->fe,
+				   &saa7231->i2c[1 + frontend].i2c_adapter,
+				   &bgt3620_tda18272_config[frontend]);
+		}
+#endif
 		ret = 0;
 		break;
 	case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3620):
@@ -1161,6 +1208,25 @@ static struct saa7231_config purus_blackgold_bgt3650 = {
 	.stream_ports		= 2,
 };
 
+static struct saa7231_config purus_blackgold_bgt3602 = {
+	.desc			= DEVICE_DESC(BGT3602),
+
+	.xtal			= 54,
+	.i2c_rate		= SAA7231_I2C_RATE_100,
+	.root_clk		= CLK_ROOT_54MHz,
+	.irq_handler		= saa7231_irq_handler,
+
+	.ext_dvb_adapters	= 2,
+	.ts0_cfg		= 0x41,
+	.ts0_clk		= 0x01,
+	.ts1_cfg		= 0x41,
+	.ts1_clk		= 0x01,
+	.frontend_enable	= saa7231_frontend_enable,
+	.frontend_attach	= saa7231_frontend_attach,
+
+	.stream_ports		= 2,
+};
+
 static struct saa7231_config purus_blackgold_bgt3620 = {
 	.desc			= DEVICE_DESC(BGT3620),
 
@@ -1303,6 +1369,7 @@ static struct pci_device_id saa7231_pci_table[] = {
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3595, SAA7231, &purus_blackgold_bgt3595),
 
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3600, SAA7231, &purus_blackgold_bgt3600),
+	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3600, SAA7231, &purus_blackgold_bgt3602),
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3620, SAA7231, &purus_blackgold_bgt3620),
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3630, SAA7231, &purus_blackgold_bgt3630),
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3650, SAA7231, &purus_blackgold_bgt3650),
