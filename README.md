@@ -5,7 +5,7 @@ Blackgold 3xxx Linux Drivers
 
 As Blackgold seem to have abandoned development of the Linux drivers this is an attempt to keep the official Blackgold drivers updated with new kernel versions.
 
-Last updated for kernels up to v4.2
+Last updated for kernels up to v4.10
 
 STANDARD INSTALL
 ================
