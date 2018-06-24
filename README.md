@@ -11,6 +11,7 @@ STANDARD INSTALL
 ================
 cd /usr/src  
 sudo git clone https://github.com/marcusbirkin/BGT3xxx.git  
+cd BGT3xxx
 sudo ./build.sh  
 sudo reboot
 
