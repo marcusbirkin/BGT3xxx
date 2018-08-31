@@ -6,6 +6,9 @@ Blackgold 3xxx Linux Drivers
 As Blackgold seem to have abandoned development of the Linux drivers this is an attempt to keep the official Blackgold drivers updated with new kernel versions.
 
 Last updated for kernels up to v4.10
+Newer kernel support is available here: http://git.cblinux.co.uk:5010/Blackgold/BGT3xxx-fork-for-cxd2837 
+
+*n.b. I no longer operate Blackgold hardware due to hardware quality issues and lack of manufacturer support*
 
 STANDARD INSTALL
 ================
